@@ -1,0 +1,304 @@
+---
+import { SITE } from '../site.config';
+import { t, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const d = t(locale);
+---
+
+<section
+  class="features"
+  aria-label={d.a11y.features}
+  data-features
+  data-interval={SITE.sliderInterval}
+>
+  <ol class="features__list" role="list">
+    {
+      d.features.map((f, i) => {
+        const active = i === 0;
+        const id = `feature-${i + 1}`;
+        return (
+          <li class:list={['feature', { 'is-active': active }]} data-feature>
+            <span class="feature__progress" aria-hidden="true" />
+            <h2 class="feature__heading">
+              <button
+                type="button"
+                class="feature__trigger"
+                id={`${id}-trigger`}
+                aria-expanded={active ? 'true' : 'false'}
+                aria-controls={`${id}-panel`}
+              >
+                <span class="feature__index">{String(i + 1).padStart(2, '0')}</span>
+                <span class="feature__title t-trim">{f.title}</span>
+              </button>
+            </h2>
+            <div
+              class="feature__panel"
+              id={`${id}-panel`}
+              role="region"
+              aria-labelledby={`${id}-trigger`}
+              aria-hidden={active ? 'false' : 'true'}
+            >
+              <div class="feature__panel-inner">
+                <p class="feature__body">{f.body}</p>
+              </div>
+            </div>
+          </li>
+        );
+      })
+    }
+  </ol>
+</section>
+
+<style>
+  .features {
+    width: 100%;
+    max-width: 31.25rem; /* 500px */
+  }
+
+  .features__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Figma: 0.5px line @ 20% white above every item, none after the last. */
+  .feature {
+    position: relative;
+    padding-bottom: 1.875rem; /* 30px */
+  }
+
+  .feature::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    inset-inline: 0;
+    height: 1px;
+    background: var(--c-line);
+  }
+
+  @media (min-resolution: 2dppx) {
+    .feature::before { height: 0.5px; }
+  }
+
+  /* Progress bar: 2px accent line growing from the inline-start edge of the active item. */
+  .feature__progress {
+    position: absolute;
+    top: -0.0625rem;
+    inset-inline: 0;
+    height: 0.125rem;
+    background: var(--c-accent);
+    transform: scaleX(var(--progress, 0));
+    transform-origin: left center;
+    opacity: 0;
+    transition: opacity 0.3s var(--ease);
+    will-change: transform;
+  }
+
+  :global([dir='rtl']) .feature__progress {
+    transform-origin: right center;
+  }
+
+  .feature.is-active .feature__progress {
+    opacity: 1;
+  }
+
+  .feature__heading {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+
+  .feature__trigger {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.875rem; /* 30px */
+    width: 100%;
+    margin: 0;
+    padding: 1.875rem 0 0; /* line → row 30px */
+    border: 0;
+    background: none;
+    text-align: start;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .feature__trigger:focus-visible {
+    outline-offset: 0.5rem;
+  }
+
+  .feature__index {
+    flex: none;
+    width: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem; /* 13px */
+    line-height: 1rem; /* 16px */
+    letter-spacing: 0;
+    transition: color 0.35s var(--ease);
+  }
+
+  .feature.is-active .feature__index {
+    color: var(--c-accent);
+  }
+
+  .feature__title {
+    font-size: 1.1875rem; /* 19px */
+    line-height: 1.1;
+    letter-spacing: var(--tr-h);
+    text-wrap: balance;
+    transition: opacity 0.25s var(--ease);
+  }
+
+  @media (hover: hover) {
+    .feature:not(.is-active) .feature__trigger:hover .feature__title {
+      opacity: 0.72;
+    }
+  }
+
+  /* Expand / collapse via grid rows (no fixed heights). */
+  .feature__panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--dur) var(--ease);
+  }
+
+  .feature.is-active .feature__panel {
+    grid-template-rows: 1fr;
+  }
+
+  .feature__panel-inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .feature__body {
+    max-width: 27.5625rem; /* 47 + 394px */
+    padding-top: 1.125rem; /* row 425 → body 443 */
+    /* Trim only the top: the panel clips overflow, so descenders must stay inside the box. */
+    text-box: trim-start cap alphabetic;
+    padding-inline-start: 2.9375rem; /* index 16 + gap 30 */
+    font-size: 0.8125rem; /* 13px */
+    line-height: 1.3846; /* 18px */
+    letter-spacing: var(--tr);
+    text-wrap: pretty;
+    opacity: 0;
+    transform: translateY(-0.25rem);
+    transition:
+      opacity var(--dur) var(--ease),
+      transform var(--dur) var(--ease);
+  }
+
+  .feature.is-active .feature__body {
+    opacity: 1;
+    transform: none;
+    transition-delay: 0.08s;
+  }
+
+  :global([dir='rtl']) .feature__title { line-height: 1.5; }
+  :global([dir='rtl']) .feature__body { line-height: 1.75; text-box: normal; }
+
+  @media (max-width: 1023px) {
+    .features { max-width: 36rem; }
+  }
+
+  @media (max-width: 767px) {
+    .features { max-width: 100%; }
+    .feature__body { max-width: 100%; }
+  }
+</style>
+
+<script>
+  /**
+   * Accordion-slider: the active item is expanded, its top line doubles as a
+   * progress bar; when the bar fills the next item takes over. Pauses while
+   * hovered, focused, off-screen or in a hidden tab. No autoplay for
+   * prefers-reduced-motion (the bar is shown full instead).
+   */
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const canHover = window.matchMedia('(hover: hover)').matches;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-features]')) {
+    const items = [...root.querySelectorAll<HTMLElement>('[data-feature]')];
+    if (items.length < 2) continue;
+
+    const interval = Number(root.dataset.interval) || 7000;
+    let active = Math.max(0, items.findIndex((li) => li.classList.contains('is-active')));
+    let elapsed = 0;
+    let last = 0;
+    let raf = 0;
+    let hovering = false;
+    let focused = false;
+    let inView = true;
+
+    const setProgress = (li: HTMLElement, value: number) =>
+      li.style.setProperty('--progress', value.toFixed(4));
+
+    function render() {
+      items.forEach((li, i) => {
+        const on = i === active;
+        li.classList.toggle('is-active', on);
+        li.querySelector('.feature__trigger')?.setAttribute('aria-expanded', String(on));
+        li.querySelector('.feature__panel')?.setAttribute('aria-hidden', String(!on));
+        setProgress(li, on && reduce.matches ? 1 : 0);
+      });
+    }
+
+    function setActive(index: number) {
+      active = (index + items.length) % items.length;
+      elapsed = 0;
+      render();
+    }
+
+    function tick(now: number) {
+      if (!last) last = now;
+      const dt = Math.min(now - last, 100); // ignore long frames (tab switch etc.)
+      last = now;
+      const paused = hovering || focused || !inView || document.hidden;
+      if (!paused) {
+        elapsed += dt;
+        const p = Math.min(elapsed / interval, 1);
+        setProgress(items[active]!, p);
+        if (p >= 1) setActive(active + 1);
+      }
+      raf = requestAnimationFrame(tick);
+    }
+
+    items.forEach((li, i) => {
+      li.querySelector('.feature__trigger')?.addEventListener('click', () => {
+        if (i !== active) setActive(i);
+        else elapsed = 0;
+      });
+    });
+
+    if (canHover) {
+      root.addEventListener('pointerenter', () => (hovering = true));
+      root.addEventListener('pointerleave', () => (hovering = false));
+    }
+    root.addEventListener('focusin', () => (focused = true));
+    root.addEventListener('focusout', () => (focused = root.contains(document.activeElement)));
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([entry]) => (inView = !!entry?.isIntersecting), {
+        threshold: 0.2,
+      }).observe(root);
+    }
+
+    render();
+
+    if (!reduce.matches) {
+      raf = requestAnimationFrame(tick);
+      document.addEventListener('visibilitychange', () => {
+        last = 0; // drop the time spent hidden
+      });
+    }
+
+    reduce.addEventListener('change', () => {
+      cancelAnimationFrame(raf);
+      last = 0;
+      render();
+      if (!reduce.matches) raf = requestAnimationFrame(tick);
+    });
+  }
+</script>

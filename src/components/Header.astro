@@ -1,0 +1,59 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import Wordmark from '../assets/wordmark.svg';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import BriefingButton from './BriefingButton.astro';
+import { t, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const d = t(locale);
+---
+
+<header class="header">
+  <a class="header__brand" href={getRelativeLocaleUrl(locale, '/')} aria-label={d.a11y.home}>
+    <Wordmark class="header__wordmark" aria-hidden="true" focusable="false" />
+  </a>
+  <nav class="header__nav" aria-label="Primary">
+    <LanguageSwitcher locale={locale} />
+    <BriefingButton locale={locale} />
+  </nav>
+</header>
+
+<style>
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    height: 3.125rem; /* 50px: pill 18 → 50 */
+    padding: 1.125rem var(--gutter) 0;
+  }
+
+  .header__brand {
+    display: block;
+    line-height: 0;
+  }
+
+  .header__wordmark {
+    display: block;
+    width: 4.625rem; /* 74px */
+    height: auto;
+  }
+
+  .header__nav {
+    display: flex;
+    align-items: center;
+    gap: 3.75rem; /* 60px */
+  }
+
+  @media (max-width: 1023px) {
+    .header__nav { gap: 2rem; }
+  }
+
+  @media (max-width: 767px) {
+    .header__nav { gap: 1.25rem; }
+  }
+</style>
