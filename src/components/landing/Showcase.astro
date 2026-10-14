@@ -12,11 +12,11 @@ const d = t(Astro.props.locale);
 ---
 
 <section class="showcase wrap" id="product">
-  <div class="showcase__frame">
+  <div class="showcase__frame" data-tilt>
     <Image src={backdrop} alt="" widths={[800, 1280, 2000, 2560]} sizes="(min-width: 1024px) 88.9vw, 100vw" class="showcase__backdrop" loading="eager" />
     <div class="showcase__blur" aria-hidden="true"></div>
     <AsciiField src={backdrop} amount={0.05} class="showcase__ascii" />
-    <div class="showcase__glass">
+    <div class="showcase__glass" data-tilt-card>
       <Image
         src={dashboard}
         alt={d.showcase.alt}
@@ -26,6 +26,7 @@ const d = t(Astro.props.locale);
         loading="eager"
         fetchpriority="high"
       />
+      <span class="showcase__glare" aria-hidden="true"></span>
     </div>
   </div>
 </section>
@@ -92,4 +93,81 @@ const d = t(Astro.props.locale);
     .showcase__frame { padding: 1.5rem 0.75rem; }
     .showcase__glass { padding: 0.5rem; border-radius: 0.75rem; }
   }
+
+  /* Tilt + glare (after bencho.dev "Tilt card"): the glass leans away under the pointer,
+     a soft highlight follows it and the far side shades a little. Own perspective per card,
+     no shared 3D scene. Driven by --rx / --ry / --gx / --gy from the script below. */
+  .showcase__glass {
+    position: relative;
+    transform: perspective(90rem) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transform-origin: 50% 50%;
+    will-change: transform;
+  }
+
+  .showcase__glare {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: var(--glare, 0);
+    background:
+      radial-gradient(
+        60% 80% at var(--gx, 50%) var(--gy, 50%),
+        rgba(255, 255, 255, 0.4) 0%,
+        rgba(255, 255, 255, 0.1) 40%,
+        transparent 70%
+      ),
+      linear-gradient(
+        var(--ga, 135deg),
+        transparent 45%,
+        rgba(0, 0, 0, 0.18) 100%
+      );
+    mix-blend-mode: soft-light;
+    transition: opacity 0.4s var(--ease);
+  }
 </style>
+
+<script>
+  const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const MAX_X = 6; // deg around the horizontal axis
+  const MAX_Y = 8; // deg around the vertical axis
+
+  for (const area of document.querySelectorAll<HTMLElement>('[data-tilt]')) {
+    const card = area.querySelector<HTMLElement>('[data-tilt-card]')!;
+    let tx = 0, ty = 0, cx = 0, cy = 0; // target / current, −1…1
+    let glare = 0, glareT = 0;
+    let raf = 0;
+
+    function frame() {
+      raf = 0;
+      cx += (tx - cx) * 0.12;
+      cy += (ty - cy) * 0.12;
+      glare += (glareT - glare) * 0.12;
+      // The side under the pointer leans away from the viewer.
+      card.style.setProperty('--ry', `${(cx * MAX_Y).toFixed(2)}deg`);
+      card.style.setProperty('--rx', `${(-cy * MAX_X).toFixed(2)}deg`);
+      card.style.setProperty('--gx', `${(50 + cx * 50).toFixed(1)}%`);
+      card.style.setProperty('--gy', `${(50 + cy * 50).toFixed(1)}%`);
+      card.style.setProperty('--ga', `${(Math.atan2(cy, cx) * 180 / Math.PI + 90 + 180).toFixed(0)}deg`);
+      card.style.setProperty('--glare', glare.toFixed(3));
+      if (Math.abs(tx - cx) > 0.001 || Math.abs(ty - cy) > 0.001 || Math.abs(glareT - glare) > 0.002) {
+        raf = requestAnimationFrame(frame);
+      }
+    }
+    const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
+
+    area.addEventListener('pointermove', (e) => {
+      if (!fine.matches || reduce.matches) return;
+      const r = card.getBoundingClientRect();
+      tx = Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width) * 2 - 1));
+      ty = Math.max(-1, Math.min(1, ((e.clientY - r.top) / r.height) * 2 - 1));
+      glareT = 0.95; // "shade 95"
+      kick();
+    });
+    area.addEventListener('pointerleave', () => {
+      tx = 0; ty = 0; glareT = 0;
+      kick();
+    });
+  }
+</script>
