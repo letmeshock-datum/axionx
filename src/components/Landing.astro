@@ -11,14 +11,17 @@ interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
+
+// Product UI screenshot is hidden for now. Set to true to bring it back.
+const showDashboard = false;
 ---
 
 <Base locale={locale}>
   <Header locale={locale} />
   <main id="main" class="main">
-    <div class="grid">
+    <div class:list={['grid', { 'grid--no-media': !showDashboard }]}>
       <div class="grid__hero"><Hero locale={locale} /></div>
-      <div class="grid__media"><Dashboard locale={locale} /></div>
+      {showDashboard && <div class="grid__media"><Dashboard locale={locale} /></div>}
       <div class="grid__features"><FeatureSlider locale={locale} /></div>
     </div>
   </main>
@@ -41,6 +44,13 @@ const { locale } = Astro.props;
     align-items: start;
   }
 
+  .grid--no-media {
+    grid-template-columns: minmax(0, 31.25rem);
+    grid-template-areas:
+      'hero'
+      'features';
+  }
+
   .grid__hero { grid-area: hero; }
   .grid__features { grid-area: features; }
   .grid__media {
@@ -59,6 +69,11 @@ const { locale } = Astro.props;
         'media'
         'features';
       row-gap: 2.5rem;
+    }
+    .grid--no-media {
+      grid-template-areas:
+        'hero'
+        'features';
     }
     .grid__media {
       justify-self: stretch;
