@@ -100,7 +100,7 @@ const d = t(Astro.props.locale);
      no shared 3D scene. Driven by --rx / --ry / --gx / --gy from the script below. */
   .showcase__glass {
     position: relative;
-    transform: perspective(90rem) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transform: perspective(90rem) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--zoom, 1));
     transform-origin: 50% 50%;
     will-change: transform;
   }
@@ -133,6 +133,27 @@ const d = t(Astro.props.locale);
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
   const MAX_X = 6; // deg around the horizontal axis
   const MAX_Y = 8; // deg around the vertical axis
+
+  // Scroll zoom: at the top of the page the glass fills the frame's width; it shrinks to its
+  // resting size as the frame scrolls up towards the top of the screen.
+  for (const frame of document.querySelectorAll<HTMLElement>('[data-tilt]')) {
+    const card = frame.querySelector<HTMLElement>('[data-tilt-card]')!;
+    let ticking = false;
+    function zoom() {
+      ticking = false;
+      const full = frame.clientWidth / Math.max(1, card.offsetWidth);
+      if (reduce.matches || full <= 1.01) { card.style.setProperty('--zoom', '1'); return; }
+      const frameTop = frame.getBoundingClientRect().top + window.scrollY;
+      const distance = Math.max(200, frameTop - window.innerHeight * 0.12);
+      const p = Math.min(Math.max(window.scrollY / distance, 0), 1);
+      const eased = p * p * (3 - 2 * p);
+      card.style.setProperty('--zoom', (full + (1 - full) * eased).toFixed(4));
+    }
+    const kick = () => { if (!ticking) { ticking = true; requestAnimationFrame(zoom); } };
+    window.addEventListener('scroll', kick, { passive: true });
+    window.addEventListener('resize', kick, { passive: true });
+    zoom();
+  }
 
   for (const area of document.querySelectorAll<HTMLElement>('[data-tilt]')) {
     const card = area.querySelector<HTMLElement>('[data-tilt-card]')!;
