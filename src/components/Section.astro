@@ -1,5 +1,5 @@
 ---
-import FeatureList from './FeatureList.astro';
+import FeatureCards from './FeatureCards.astro';
 import type { Section } from '../i18n/ui';
 
 interface Props {
@@ -18,8 +18,8 @@ const titleId = `${s.id}-title`;
     <Heading class="section__title t-trim" id={titleId}>{s.title}</Heading>
     <p class="section__intro t-trim">{s.intro}</p>
   </div>
-  <div class="section__list">
-    <FeatureList items={s.items} label={s.title} />
+  <div class="section__cards">
+    <FeatureCards items={s.items} label={s.title} />
   </div>
   <p class="section__subline">{s.subline}</p>
 </section>
@@ -27,32 +27,23 @@ const titleId = `${s.id}-title`;
 <style>
   .section {
     display: grid;
-    grid-template-columns: minmax(0, 31.25rem) minmax(0, 1fr); /* 500px | list */
+    grid-template-columns: minmax(0, 31.25rem) minmax(0, 1fr); /* 500px | subline */
     grid-template-areas:
-      'head list'
-      'sub  list';
-    grid-template-rows: auto 1fr;
+      'head  sub'
+      'cards cards';
     column-gap: 3.75rem;
-    row-gap: 3rem;
-    align-items: start;
+    row-gap: 3.5rem;
     scroll-margin-top: 2rem;
   }
 
   .section__head { grid-area: head; }
-
-  .section__list {
-    grid-area: list;
-    justify-self: end;
-    width: 100%;
-    max-width: 31.25rem;
-    /* First rule sits level with the title: eyebrow chip 1.75rem + gap 1.5rem. */
-    padding-top: 3.25rem;
-  }
+  .section__cards { grid-area: cards; }
 
   .section__subline {
     grid-area: sub;
     align-self: end;
-    max-width: 26rem;
+    justify-self: end;
+    max-width: 24rem;
     padding-inline-start: 1rem;
     border-inline-start: 0.125rem solid var(--c-accent);
     font-size: 1.1875rem; /* 19px */
@@ -109,16 +100,11 @@ const titleId = `${s.id}-title`;
       grid-template-columns: minmax(0, 1fr);
       grid-template-areas:
         'head'
-        'list'
+        'cards'
         'sub';
-      grid-template-rows: auto;
       row-gap: 2.5rem;
     }
-    .section__list {
-      justify-self: stretch;
-      max-width: 36rem;
-      padding-top: 0;
-    }
+    .section__subline { justify-self: start; max-width: 32rem; }
     .section__intro { max-width: 32rem; }
   }
 
@@ -126,6 +112,5 @@ const titleId = `${s.id}-title`;
     .section { row-gap: 2.25rem; }
     .section__title { font-size: 2.25rem; }
     .section__intro { max-width: 100%; margin-top: 1rem; }
-    .section__list { max-width: 100%; }
   }
 </style>
