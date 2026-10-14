@@ -2,7 +2,6 @@
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import logo from '../assets/landing/logo-nav.svg';
 import gen from '../assets/landing/gen.svg';
-import LanguageSwitcher from './LanguageSwitcher.astro';
 import { SITE } from '../site.config';
 import { t, type Locale } from '../i18n/ui';
 
@@ -22,7 +21,6 @@ const d = t(locale);
     <a class="nav__link" href="#product">{d.nav.product}</a>
     <a class="nav__link" href="#spar">{d.nav.spar}</a>
     <a class="nav__link" href="#oversight">{d.nav.oversight}</a>
-    <LanguageSwitcher locale={locale} />
     <a class="btn nav__demo" href={`mailto:${SITE.email}`}>{d.nav.demo}</a>
   </nav>
 </header>
@@ -87,15 +85,15 @@ const d = t(locale);
   }
 
   @media (max-width: 767px) {
-    .nav { padding-block: 1rem; }
+    .nav { padding-block: 1rem; gap: 1rem; }
     .nav__logo { width: 7.4rem; }
     .nav__gen { width: 3.77rem; }
     .nav__links { gap: 1rem; }
-    .nav__demo { padding: 0.75rem 1rem; font-size: 0.875rem; }
+    .nav__demo { padding: 0.625rem 0.875rem; font-size: 0.8125rem; }
   }
 
-  /* Phones: logo + language only; the same CTA closes the page. */
-  @media (max-width: 519px) {
+  /* Very narrow phones: logo only; the same CTA closes the page. */
+  @media (max-width: 359px) {
     .nav__demo { display: none; }
   }
 </style>
