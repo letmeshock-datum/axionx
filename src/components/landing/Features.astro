@@ -1,48 +1,87 @@
 ---
 import { Image } from 'astro:assets';
 import pattern from '../../assets/landing/pattern-overlay.png';
-import dialogMain from '../../assets/landing/dialog-natural-language.png';
-import dialogPeek from '../../assets/landing/dialog-agent-remembers.png';
+import dialog01 from '../../assets/landing/dialog-01.png';
+import dialog02 from '../../assets/landing/dialog-02.png';
+import dialog03 from '../../assets/landing/dialog-03.png';
+import dialog04 from '../../assets/landing/dialog-04.png';
 import { t, type Locale } from '../../i18n/ui';
 
 interface Props {
   locale: Locale;
 }
 const d = t(Astro.props.locale);
+const dialogs = [dialog01, dialog02, dialog03, dialog04];
 ---
 
-<section class="features wrap">
-  <ul class="features__cards">
-    {
-      d.features.items.map((f, i) => (
-        <li class:list={['card', { 'card--active': i === 0 }]}>
-          <h3 class="card__title">{f.title}</h3>
-          <p class="card__body">{f.body}</p>
-        </li>
-      ))
-    }
-  </ul>
+<!--
+  Scroll-driven carousel (Figma 1338:2997 + dialogs 1340:6558).
+  Desktop: the block pins while the page scrolls; each quarter of the travel
+  activates the next card and slides the next Axsi dialog to the centre.
+  Below 1024px: no pinning, the dialogs swipe horizontally and drive the cards.
+-->
+<section class="fx" data-fx aria-label={d.features.label}>
+  <div class="fx__pin wrap">
+    <ul class="fx__cards">
+      {
+        d.features.items.map((f, i) => (
+          <li>
+            <button
+              type="button"
+              class:list={['card', { 'is-active': i === 0 }]}
+              data-fx-card={i}
+              aria-current={i === 0 ? 'true' : 'false'}
+            >
+              <span class="card__title">{f.title}</span>
+              <span class="card__body">{f.body}</span>
+            </button>
+          </li>
+        ))
+      }
+    </ul>
 
-  <div class="features__panel">
-    <Image src={pattern} alt="" widths={[1440, 2560]} sizes="100vw" class="features__pattern" />
-    <figure class="dialog dialog--main">
-      <Image src={dialogMain} alt={d.features.dialogAlt[0]} widths={[372, 744]} sizes="23.25rem" class="dialog__img" />
-    </figure>
-    <figure class="dialog dialog--peek" aria-hidden="true">
-      <Image src={dialogPeek} alt="" widths={[372, 744]} sizes="23.25rem" class="dialog__img" />
-    </figure>
+    <div class="fx__panel">
+      <Image src={pattern} alt="" widths={[1440, 2560]} sizes="100vw" class="fx__pattern" />
+      <div class="fx__viewport" data-fx-viewport dir="ltr">
+        <ol class="fx__track" data-fx-track>
+          {
+            dialogs.map((img, i) => (
+              <li class:list={['dialog', { 'is-active': i === 0 }]} data-fx-dialog={i}>
+                <Image
+                  src={img}
+                  alt={d.features.dialogAlt[i]}
+                  widths={[372, 744]}
+                  sizes="23.25rem"
+                  class="dialog__img"
+                  loading={i < 2 ? 'eager' : 'lazy'}
+                />
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
   </div>
 </section>
 
 <style>
-  /* Figma Frame 44 1338:2997 — cards 367 | gap 69 | panel 844 × 668. */
-  .features {
-    display: flex;
-    align-items: center;
-    gap: 4.3125rem;
+  /* Pin travel: one step ≈ 70% of the viewport per extra card. */
+  .fx {
+    --step: 28.625rem; /* dialog pitch: 693 − 235 px in Figma */
+    --panel-h: 41.75rem; /* 668px */
+    position: relative;
+    height: calc(var(--panel-h) + 3 * 70svh);
   }
 
-  .features__cards {
+  .fx__pin {
+    position: sticky;
+    top: max(1rem, calc(50svh - var(--panel-h) / 2));
+    display: flex;
+    align-items: center;
+    gap: 4.3125rem; /* 69px */
+  }
+
+  .fx__cards {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -54,14 +93,24 @@ const d = t(Astro.props.locale);
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    width: 100%;
     padding: 1.5rem;
+    border: 0;
     border-radius: 0.5rem;
+    background: transparent;
+    text-align: start;
+    cursor: pointer;
+    transition: background-color 0.35s var(--ease);
   }
 
-  .card--active { background: var(--c-surface-muted); }
+  .card.is-active { background: var(--c-surface-muted); }
+
+  @media (hover: hover) {
+    .card:not(.is-active):hover { background: var(--c-surface-subtle); }
+  }
 
   .card__title {
-    font-size: 1.25rem; /* 20px, Diatype Bold */
+    font-size: 1.25rem;
     font-weight: 700;
     line-height: 1.2;
     letter-spacing: -0.02em; /* Geist runs wider than Diatype; keeps titles on one line */
@@ -75,16 +124,12 @@ const d = t(Astro.props.locale);
     text-wrap: pretty;
   }
 
-  /* 1338:3019 — warm gradient panel, clips the dialogs. */
-  .features__panel {
+  /* 1338:3019 — warm gradient panel that clips the dialogs. */
+  .fx__panel {
     position: relative;
     flex: 1 1 0;
     min-width: 0;
-    height: 41.75rem; /* 668px */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 1.5rem;
+    height: var(--panel-h);
     border-radius: 0.5rem;
     overflow: hidden;
     isolation: isolate;
@@ -100,11 +145,11 @@ const d = t(Astro.props.locale);
     );
   }
 
-  .features__pattern {
+  .fx__pattern {
     position: absolute;
     right: 0;
     top: calc(50% + 0.75rem);
-    width: 90rem; /* 1440 × 810 */
+    width: 90rem;
     max-width: none;
     height: 50.625rem;
     translate: 0 -50%;
@@ -114,11 +159,26 @@ const d = t(Astro.props.locale);
     z-index: -1;
   }
 
-  :global([dir='rtl']) .features__pattern { right: auto; left: 0; }
+  .fx__viewport {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* Track origin = the centred slot (x 235 of 844); cards sit one pitch apart. */
+  .fx__track {
+    position: absolute;
+    top: 1.5rem;
+    left: calc(50% - 11.7133rem);
+    display: flex;
+    gap: calc(var(--step) - 23.4266rem);
+    transform: translateX(calc(var(--i, 0) * var(--step) * -1));
+    transition: transform 0.7s var(--ease);
+    will-change: transform;
+  }
 
   .dialog {
     flex: none;
-    width: 23.375rem; /* 372 + 1px border each side */
+    width: 23.4266rem; /* 374.83px */
     border: 1px solid #e88652;
     border-radius: 1.5rem;
     background: rgba(0, 0, 0, 0.4);
@@ -126,44 +186,160 @@ const d = t(Astro.props.locale);
     backdrop-filter: blur(6.25rem);
     box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.25);
     overflow: hidden;
+    filter: blur(10px);
+    transition: filter 0.6s var(--ease);
   }
+
+  .dialog.is-active { filter: none; }
 
   .dialog__img {
     display: block;
-    width: 23.25rem;
-    height: 56.25rem; /* 900px — the panel crops the bottom */
+    width: 100%;
+    height: 56.375rem; /* 902px — the panel crops the bottom */
     object-fit: cover;
-    border-radius: 1.5rem;
   }
 
-  /* 1338:3023 — second dialog, out of focus, bleeding off the right edge. */
-  .dialog--peek {
-    position: absolute;
-    top: 3.75rem;
-    right: -13.9375rem; /* -223px */
-    filter: blur(10px);
-  }
-
-  :global([dir='rtl']) .dialog--peek { right: auto; left: -13.9375rem; }
-
+  /* ---------- Below desktop: swipe carousel, no pinning ---------- */
   @media (max-width: 1023px) {
-    .features { flex-direction: column; align-items: stretch; gap: 2rem; }
-    .features__cards {
+    .fx { height: auto; --panel-h: 36rem; }
+    .fx__pin {
+      position: static;
+      flex-direction: column-reverse;
+      align-items: stretch;
+      gap: 1.5rem;
+    }
+    .fx__cards {
       width: 100%;
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.75rem;
+      gap: 0.5rem;
     }
-    .features__panel { flex: none; height: 36rem; }
-    .dialog--peek { right: -16rem; }
+    .card { height: 100%; padding: 1.25rem; }
+    .fx__panel { flex: none; }
+
+    .fx__viewport {
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+    .fx__viewport::-webkit-scrollbar { display: none; }
+
+    .fx__track {
+      position: static;
+      width: max-content;
+      padding: 1.5rem calc(50% - 9.25rem) 0;
+      gap: 1rem;
+      transform: none;
+      transition: none;
+    }
+    .dialog {
+      width: 18.5rem;
+      scroll-snap-align: center;
+      filter: none;
+      opacity: 0.45;
+      transition: opacity 0.4s var(--ease);
+    }
+    .dialog.is-active { opacity: 1; }
+    .dialog__img { height: 44.6rem; }
   }
 
   @media (max-width: 767px) {
-    .features__cards { grid-template-columns: minmax(0, 1fr); gap: 0.25rem; }
-    .card { padding: 1.25rem; }
-    .features__panel { height: 30rem; }
-    .dialog { width: 18.5rem; }
-    .dialog__img { width: 18.375rem; height: 44.5rem; }
-    .dialog--peek { display: none; }
+    .fx { --panel-h: 31rem; }
+    .fx__cards { grid-template-columns: minmax(0, 1fr); gap: 0.25rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fx__track, .dialog { transition: none; }
   }
 </style>
+
+<script>
+  const desktop = window.matchMedia('(min-width: 1024px)');
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-fx]')) {
+    const pin = root.querySelector<HTMLElement>('.fx__pin')!;
+    const track = root.querySelector<HTMLElement>('[data-fx-track]')!;
+    const viewport = root.querySelector<HTMLElement>('[data-fx-viewport]')!;
+    const cards = [...root.querySelectorAll<HTMLButtonElement>('[data-fx-card]')];
+    const dialogs = [...root.querySelectorAll<HTMLElement>('[data-fx-dialog]')];
+    const count = dialogs.length;
+    let active = 0;
+    let ticking = false;
+
+    function setActive(i: number) {
+      if (i === active) return;
+      active = i;
+      track.style.setProperty('--i', String(i));
+      cards.forEach((c, k) => {
+        c.classList.toggle('is-active', k === i);
+        c.setAttribute('aria-current', String(k === i));
+      });
+      dialogs.forEach((dl, k) => dl.classList.toggle('is-active', k === i));
+    }
+
+    // Desktop: map the pinned travel onto 0..count-1.
+    function travel() {
+      return Math.max(1, root.offsetHeight - pin.offsetHeight);
+    }
+    function stickyTop() {
+      return parseFloat(getComputedStyle(pin).top) || 0;
+    }
+    function fromScroll() {
+      ticking = false;
+      if (!desktop.matches) return;
+      const progress = (stickyTop() - root.getBoundingClientRect().top) / travel();
+      const p = Math.min(Math.max(progress, 0), 0.9999);
+      setActive(Math.floor(p * count));
+    }
+
+    // Below desktop: the centred dialog in the swipe carousel wins.
+    function fromSwipe() {
+      if (desktop.matches) return;
+      const mid = viewport.getBoundingClientRect().left + viewport.clientWidth / 2;
+      let best = 0;
+      let bestDist = Infinity;
+      dialogs.forEach((dl, k) => {
+        const r = dl.getBoundingClientRect();
+        const dist = Math.abs(r.left + r.width / 2 - mid);
+        if (dist < bestDist) { bestDist = dist; best = k; }
+      });
+      setActive(best);
+    }
+
+    cards.forEach((card, i) => {
+      card.addEventListener('click', () => {
+        if (desktop.matches) {
+          const top = window.scrollY + root.getBoundingClientRect().top - stickyTop();
+          window.scrollTo({ top: top + travel() * ((i + 0.5) / count), behavior: 'smooth' });
+        } else {
+          const dl = dialogs[i]!;
+          viewport.scrollTo({
+            left: dl.offsetLeft - (viewport.clientWidth - dl.offsetWidth) / 2,
+            behavior: 'smooth',
+          });
+        }
+        setActive(i);
+      });
+    });
+
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(fromScroll);
+        }
+      },
+      { passive: true },
+    );
+    viewport.addEventListener('scroll', () => requestAnimationFrame(fromSwipe), { passive: true });
+    viewport.addEventListener('scrollend', fromSwipe);
+    desktop.addEventListener('change', () => {
+      track.style.setProperty('--i', String(active));
+      desktop.matches ? fromScroll() : fromSwipe();
+    });
+    window.addEventListener('resize', () => requestAnimationFrame(fromScroll), { passive: true });
+    fromScroll();
+  }
+</script>

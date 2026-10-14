@@ -27,7 +27,7 @@ export interface Dictionary {
   hero: { accent: string; line1: string; line2: string; introLead: string; introRest: string };
   showcase: { alt: string };
   why: { accent: string; line2: string; line3: string };
-  features: { items: Feature[]; dialogAlt: [string, string] };
+  features: { items: Feature[]; dialogAlt: [string, string, string, string]; label: string };
   spar: {
     title: string;
     intro: string;
@@ -103,9 +103,12 @@ export const ui: Record<Locale, Dictionary> = {
           body: 'Your data never leaves the organization’s perimeter, and nothing is shared outside it.',
         },
       ],
+      label: 'What Axion Gen does',
       dialogAlt: [
         'Axsi answers “How are we doing on closing food-safety violations in Jeddah?” with a summary and a monthly bar chart.',
-        'A second Axsi conversation, out of focus.',
+        'Axsi pulls the user’s saved Monday view for Dammam, then adds a weekly watch on two priority districts.',
+        'Axsi traces the 60.5% coverage figure back to 4,812 source rows, with the filters and lineage behind it.',
+        'Axsi runs a tenant audit for case H-48221 on-premises, with zero bytes of egress, and saves the policy.',
       ],
     },
     spar: {
@@ -199,9 +202,12 @@ export const ui: Record<Locale, Dictionary> = {
           body: 'لا تغادر بياناتك النطاق الأمني للمؤسسة، ولا يُشارَك شيء خارجه.',
         },
       ],
+      label: 'ما يقدّمه Axion Gen',
       dialogAlt: [
         'Axsi يجيب عن سؤال حول إغلاق مخالفات سلامة الغذاء في جدة، مع ملخص ورسم بياني شهري.',
-        'محادثة ثانية مع Axsi خارج نطاق التركيز.',
+        'Axsi يستدعي العرض المحفوظ ليوم الاثنين للدمام، ثم يضيف متابعة أسبوعية لحيّين ذوي أولوية.',
+        'Axsi يتتبّع نسبة التغطية 60.5% حتى 4,812 صفًا مصدريًا، مع المرشّحات ومسار البيانات.',
+        'Axsi يُجري تدقيق المستأجر للحالة H-48221 داخل مقرّ المؤسسة دون أي بيانات خارجة، ويحفظ السياسة.',
       ],
     },
     spar: {
