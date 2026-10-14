@@ -179,70 +179,65 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     height: 56.375rem;
   }
 
+  /* Every card wears the same painted glass: the panel is a plain vertical gradient, so the
+     Figma glass (40% black over a heavy backdrop blur) equals that gradient under 40% black
+     (stops mapped from the panel onto the card). One background for every position means
+     nothing jumps when a card changes place — only transform, blur and content opacity move,
+     all on the same 0.8s curve. It also avoids backdrop-blur seams at the clipped panel edges
+     and keeps the panel's glyph texture from showing through. */
   .dialog {
     --x: 0rem;
     --s: 1;
     --ry: 0deg;
+    --blur: 0px;
+    --fade: 1;
     position: absolute;
     inset: 0;
     width: 23.4266rem; /* 374.83px */
     border-radius: 1.5rem;
-    background: rgba(0, 0, 0, 0.4);
+    background:
+      linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+      linear-gradient(180deg, rgb(177, 100, 60) -2.66%, rgb(177, 98, 57) 13.54%, rgb(163, 87, 50) 20.14%, rgb(106, 49, 29) 38.74%, rgb(7, 6, 4) 62.73%, rgb(16, 16, 15) 65.73%, rgb(110, 108, 105) 84.32%);
     box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.25);
     overflow: hidden;
     transform-origin: 50% 20%;
     transform: translateX(var(--x)) perspective(64rem) rotateY(var(--ry)) scale(var(--s));
+    filter: blur(var(--blur));
     transition:
       transform 0.8s var(--ease),
-      opacity 0.6s var(--ease);
-    will-change: transform, opacity;
+      filter 0.8s var(--ease),
+      opacity 0.8s var(--ease);
+    will-change: transform, filter, opacity;
   }
 
-  /* Front: sharp glass with the Figma backdrop blur. */
-  .dialog[data-pos='0'] {
-    z-index: 3;
-    -webkit-backdrop-filter: blur(6.25rem);
-    backdrop-filter: blur(6.25rem);
+  .dialog__img,
+  .dialog::before {
+    opacity: var(--fade);
+    transition: opacity 0.8s var(--ease);
   }
 
-  /* Neighbours: ~56px clear of the front card, turned slightly inwards and out of focus.
-     They keep the glass (backdrop blur) so the panel's glyph texture doesn't show through;
-     the translucency is on their content, not the whole card, or the blur would fade too. */
-  /* Neighbours stand at the panel's clipped edges, where a backdrop blur runs out of backdrop
-     and lets the sharp panel show through as a seam. The panel is a plain vertical gradient, so
-     the blurred glass equals that gradient under 40% black: paint it directly instead (stops
-     mapped from the panel onto the card). */
+  /* Front: sharp. */
+  .dialog[data-pos='0'] { z-index: 3; }
+
+  /* Neighbours: ~56px clear of the front card, turned slightly inwards, content at 50%,
+     the whole tile out of focus (Figma had 10px; doubled on request). */
   .dialog[data-pos='-1'],
   .dialog[data-pos='1'] {
     z-index: 2;
     --s: 0.86;
-    background:
-      linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
-      linear-gradient(180deg, rgb(177, 100, 60) -2.66%, rgb(177, 98, 57) 13.54%, rgb(163, 87, 50) 20.14%, rgb(106, 49, 29) 38.74%, rgb(7, 6, 4) 62.73%, rgb(16, 16, 15) 65.73%, rgb(110, 108, 105) 84.32%);
-    filter: blur(20px); /* whole tile, edges included (Figma had 10px; doubled on request) */
-  }
-
-
-
-  .dialog__img,
-  .dialog::before {
-    transition: opacity 0.6s var(--ease);
-  }
-
-  .dialog[data-pos='-1'] .dialog__img,
-  .dialog[data-pos='1'] .dialog__img,
-  .dialog[data-pos='-1']::before,
-  .dialog[data-pos='1']::before {
-    opacity: 0.5;
+    --blur: 20px;
+    --fade: 0.5;
   }
   .dialog[data-pos='-1'] { --x: -24.5rem; --ry: 22deg; }
   .dialog[data-pos='1'] { --x: 24.5rem; --ry: -22deg; }
 
-  /* Further out: parked beyond the neighbours, fully transparent. */
+  /* Further out: parked beyond the neighbours, still blurred, faded out. */
   .dialog[data-pos='-2'],
   .dialog[data-pos='2'] {
     z-index: 1;
     --s: 0.74;
+    --blur: 20px;
+    --fade: 0.5;
     opacity: 0;
     pointer-events: none;
   }
@@ -321,6 +316,11 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
       width: 18.5rem;
       scroll-snap-align: center;
       filter: none;
+      --fade: 1;
+      /* Flat swipe strip: real glass is safe here (no clipped 3D edges). */
+      background: rgba(0, 0, 0, 0.4);
+      -webkit-backdrop-filter: blur(6.25rem);
+      backdrop-filter: blur(6.25rem);
       opacity: 0.45;
       transition: opacity 0.4s var(--ease);
     }
