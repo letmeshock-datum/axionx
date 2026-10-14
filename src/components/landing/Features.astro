@@ -206,7 +206,7 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
   }
 
   .dialog {
-    border: 1px solid #e88652;
+    border: 0;
     background: rgba(0, 0, 0, 0.4);
     -webkit-backdrop-filter: blur(6.25rem);
     backdrop-filter: blur(6.25rem); /* 100px */
@@ -215,12 +215,30 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     backface-visibility: hidden;
   }
 
-  /* 4px extrusion: stacked 1px outlines behind the face read as a solid edge when the card turns,
-     without filling the glass from inside. */
+  /* Figma 1340:6776 stroke: 1px inside, linear gradient top → bottom,
+     #e88652 → rgba(43, 15, 0, 0). Drawn as a masked ring so it follows the radius. */
+  .dialog::before,
+  .slab {
+    background: linear-gradient(180deg, #e88652 0%, rgba(43, 15, 0, 0) 100%);
+    padding: 1px;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  }
+
+  .dialog::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  /* 4px extrusion: stacked 1px gradient outlines behind the face read as a solid edge when
+     the card turns, without filling the glass from inside. */
   .slab {
     transform: translateZ(var(--z));
-    background: transparent;
-    border: 1px solid #b8653a;
   }
 
   .dialog__img {

@@ -18,9 +18,10 @@ interface Props {
   gamma?: number; // brightness curve for the field score
   ink?: string; // glyph colour ("ink" mode)
   lift?: number; // cells darker than this are lifted towards warm white
+  telemetry?: number; // share of rows that carry telemetry text instead of the ramp
   class?: string;
 }
-const { src, amount = 0.11, cell = 8, contour = 0.5, gamma = 2.2, ink = '#e8c26a', lift = 0.35, class: cls = '' } = Astro.props;
+const { src, amount = 0.11, cell = 8, contour = 0.5, gamma = 2.2, ink = '#e8c26a', lift = 0.35, telemetry = 0.25, class: cls = '' } = Astro.props;
 const sample = await getImage({ src, width: 720, format: 'webp' });
 ---
 
@@ -34,6 +35,7 @@ const sample = await getImage({ src, width: 720, format: 'webp' });
   data-gamma={gamma}
   data-ink={ink}
   data-lift={lift}
+  data-telemetry={telemetry}
   aria-hidden="true"></canvas>
 
 <style>
@@ -48,14 +50,16 @@ const sample = await getImage({ src, width: 720, format: 'webp' });
 
 <script>
   const RAMP = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. ";
+  // Anonymised: categories, cities, statuses and numbers only — no proper names.
   const TELEMETRY = [
-    '"twin_id":"TWN-RD-00412" "asset":"King Fahd Road, Segment 07" "district":"Al Olaya, Riyadh" "status":"nominal" "condition_score":89 "sensor_temp_c":42.1',
-    '"twin_id":"TWN-BLD-01290" "asset":"Corniche Pavilion" "district":"Al Hamra, Jeddah" "status":"watch" "condition_score":62 "violations_open":7',
-    '"twin_id":"TWN-RD-00977" "asset":"Prince Mohammed bin Fahd Road" "district":"Dammam" "status":"degraded" "condition_score":44 "detections":19',
-    '"twin_id":"TWN-INS-04812" "series":"cov_by_amana_v3" "coverage":60.5 "window":"Mar–Aug 2026" "source_rows":4812 "lineage":"inspection_reports_daily"',
-    '"twin_id":"TWN-BLD-02218" "asset":"KAFD Tower 3 Podium" "district":"KAFD, Riyadh" "status":"nominal" "condition_score":91 "history_points":388',
-    '"case":"H-48221" "audit":"tenant" "records":14208 "cluster":"axion-cluster-01" "egress_bytes":0 "policy":"on-prem"',
-    '"twin_id":"TWN-BR-00133" "asset":"Al Balad Crossing" "district":"Al Balad, Jeddah" "status":"watch" "condition_score":58 "last_inspection":"2026-07-21"',
+    '"twin_id":"TWN-RD-00412" "asset":"road segment 07" "city":"Riyadh" "status":"nominal" "condition_score":89 "sensor_temp_c":42.1',
+    '"twin_id":"TWN-BLD-01290" "asset":"public pavilion" "city":"Jeddah" "status":"watch" "condition_score":62 "violations_open":7',
+    '"twin_id":"TWN-RD-00977" "asset":"arterial road, exit 9" "city":"Dammam" "status":"degraded" "condition_score":44 "detections":19',
+    '"series":"coverage_by_region" "coverage":60.5 "window":"Mar–Aug 2026" "source_rows":4812 "lineage":"inspection_reports_daily"',
+    '"twin_id":"TWN-BLD-02218" "asset":"office podium" "city":"Riyadh" "status":"nominal" "condition_score":91 "history_points":388',
+    '"case":"H-48221" "audit":"tenant" "records":14208 "deployment":"on-prem" "egress_bytes":0 "policy":"saved"',
+    '"twin_id":"TWN-BR-00133" "asset":"pedestrian bridge" "city":"Jeddah" "status":"watch" "condition_score":58 "last_inspection":"2026-07-21"',
+    '"twin_id":"TWN-PK-00095" "asset":"park lighting, zone 3" "city":"Dammam" "status":"nominal" "condition_score":84 "detections":2',
   ];
 
   type Cell = { i: number; c: number; r: number; s: number; col: string; lum: number };
@@ -86,6 +90,7 @@ const sample = await getImage({ src, width: 720, format: 'webp' });
     const inkHex = canvas.dataset.ink || '#e8c26a';
     const INK = [1, 3, 5].map((i) => parseInt(inkHex.slice(i, i + 2), 16));
     const LIFT = [242, 242, 239];
+    const telemetryShare = Number(canvas.dataset.telemetry ?? 0.25);
     const cellW = cellH * 0.6;
     const img = new Image();
     img.decoding = 'async';
@@ -151,11 +156,11 @@ const sample = await getImage({ src, width: 720, format: 'webp' });
         const col = `rgb(${INK.map((v, j) => Math.round(v + (LIFT[j]! - v) * a)).join(',')})`;
         cells.push({ i: k, c, r, s: score[k]!, col, lum: lum[k]! });
       }
-      // Roughly half the rows carry telemetry text instead of the ramp.
+      // A share of the rows carry telemetry text instead of the ramp.
       rowLine = new Int16Array(rows);
       rowShift = new Int16Array(rows);
       for (let r = 0; r < rows; r++) {
-        rowLine[r] = hash(r, 7) < 0.5 ? Math.floor(hash(r, 13) * TELEMETRY.length) : -1;
+        rowLine[r] = hash(r, 7) < telemetryShare ? Math.floor(hash(r, 13) * TELEMETRY.length) : -1;
         rowShift[r] = Math.floor(hash(r, 29) * 200);
       }
       draw(performance.now());
