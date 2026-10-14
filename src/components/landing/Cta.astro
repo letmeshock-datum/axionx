@@ -9,7 +9,7 @@ interface Props {
 const d = t(Astro.props.locale);
 ---
 
-<footer class="cta">
+<footer class="cta" data-cta>
   <div class="cta__top wrap">
     <h2 class="cta__title display">
       <span>{d.cta.line1}</span>
@@ -19,7 +19,7 @@ const d = t(Astro.props.locale);
   </div>
   <!-- Frame 43 1338:3129: 203px strip, the 230px wordmark is cropped at the bottom. -->
   <div class="cta__mark" aria-hidden="true">
-    <img src={logo.src} width={logo.width} height={logo.height} alt="" class="cta__logo" />
+    <img src={logo.src} width={logo.width} height={logo.height} alt="" class="cta__logo" data-cta-logo />
   </div>
 </footer>
 
@@ -58,10 +58,13 @@ const d = t(Astro.props.locale);
     overflow: hidden;
   }
 
+  /* Rises out of the bottom edge as the page reaches its end (after thedatum.ai's footer). */
   .cta__logo {
     width: calc(100vw * 1417.84 / 1440);
     max-width: none;
     height: auto;
+    transform: translate3d(0, calc((1 - var(--rise, 1)) * 72%), 0);
+    will-change: transform;
   }
 
   @media (max-width: 1023px) {
@@ -75,3 +78,25 @@ const d = t(Astro.props.locale);
     .cta__btn { padding: 1rem 1.5rem; font-size: 1.0625rem; }
   }
 </style>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  for (const cta of document.querySelectorAll<HTMLElement>('[data-cta]')) {
+    const logo = cta.querySelector<HTMLElement>('[data-cta-logo]')!;
+    let ticking = false;
+    function update() {
+      ticking = false;
+      if (reduce.matches) { logo.style.setProperty('--rise', '1'); return; }
+      const vh = window.innerHeight;
+      const end = document.documentElement.scrollHeight - vh; // page bottom
+      const start = Math.min(end - 1, window.scrollY + cta.getBoundingClientRect().top - vh); // footer enters
+      const p = Math.min(Math.max((window.scrollY - start) / Math.max(1, end - start), 0), 1);
+      const eased = p * p * (3 - 2 * p); // keeps rising all the way, settles as you land on the bottom
+      logo.style.setProperty('--rise', eased.toFixed(4));
+    }
+    const kick = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+    window.addEventListener('scroll', kick, { passive: true });
+    window.addEventListener('resize', kick, { passive: true });
+    update();
+  }
+</script>
