@@ -96,32 +96,43 @@ function act() {
   const b = base('fig-act');
   const { K, glow } = b;
   let svg = b.svg;
-  const { box, on, TOP, FRONT, SIDE } = K;
-  // Lane under the barrier, then the signal wire from console to post.
+  const { box, on, TOP, FRONT, SIDE, D } = K;
+  // Road across the plate (runs along +x), centre dashes and a stop line before the checkpoint.
   svg += on(
     TOP(0, 0, 5),
-    `<rect class="d" x="104" y="110" width="88" height="30" rx="2"/>` +
-      [118, 136, 154, 172].map((x) => `<line class="d" x1="${x}" y1="125" x2="${x + 8}" y2="125"/>`).join(''),
+    `<line class="w" x1="0" y1="100" x2="200" y2="100"/><line class="w" x1="0" y1="138" x2="200" y2="138"/>` +
+      [12, 36, 60, 84, 108, 168, 192].map((x) => `<line class="d" x1="${x}" y1="119" x2="${x + 12}" y2="119"/>`).join('') +
+      `<line class="d" x1="140" y1="102" x2="140" y2="136"/>`,
   );
-  const wire = 'M 48 62 L 48 101 L 112 101';
+  // Signal wire: console → checkpoint post at the road edge.
+  const wire = 'M 54 60 L 54 91 L 146 91';
   svg += on(TOP(0, 0, 5), `<path class="w" d="${wire}"/><path class="pulse pulse--act" pathLength="1000" d="${wire}" ${glow}/>`);
   // Console with a lit screen and the action button on top.
-  svg += box(20, 22, 5, 52, 40, 28);
+  svg += box(28, 18, 5, 52, 42, 28);
   svg += on(
-    FRONT(20, 62, 33),
+    FRONT(28, 60, 33),
     `<rect class="hot glass" x="6" y="5" width="28" height="12" rx="1" ${glow}/>` +
       `<line class="d" x1="38" y1="8" x2="47" y2="8"/><line class="d" x1="38" y1="13" x2="47" y2="13"/>`,
   );
-  svg += on(SIDE(72, 62, 33), [8, 14, 20, 26, 32].map((u) => `<line class="d" x1="${u}" y1="6" x2="${u}" y2="20"/>`).join(''));
-  svg += `<g class="btn">${box(48, 34, 33, 14, 14, 4)}</g>`;
-  // Barrier: post, lamp, and a boom that lifts in the post's front plane.
-  svg += box(112, 96, 5, 10, 10, 40);
-  svg += `<g class="lamp" ${glow}>${box(112, 96, 45, 10, 10, 5)}</g>`;
+  svg += on(SIDE(80, 60, 33), [8, 14, 20, 26, 32, 38].map((u) => `<line class="d" x1="${u}" y1="6" x2="${u}" y2="20"/>`).join(''));
+  svg += `<g class="btn">${box(56, 30, 33, 14, 14, 4)}</g>`;
+  // Checkpoint post on the far kerb, lamp on top.
+  svg += box(146, 86, 5, 10, 10, 40);
+  svg += `<g class="lamp" ${glow}>${box(146, 86, 45, 10, 10, 5)}</g>`;
+  // Vehicle waiting at the stop line; it drives through once the boom is up.
+  const [dx, dy] = D(110, 0, 0);
+  svg +=
+    `<g class="car" style="--car-x:${dx}px; --car-y:${dy}px">` +
+    box(70, 108, 5, 30, 20, 9) +
+    box(76, 110, 14, 15, 16, 7) +
+    on(SIDE(100, 128, 14), `<rect class="hot" x="2" y="2" width="3" height="3" ${glow}/><rect class="hot" x="15" y="2" width="3" height="3" ${glow}/>`) +
+    `</g>`;
+  // Boom: lies across the road in the post's side plane (x = 156), pivoting at the post.
   svg += on(
-    FRONT(0, 106, 0),
-    `<g transform="translate(117 -38)"><g class="boom">` +
-      `<rect class="f fr" x="0" y="-2.5" width="74" height="5"/>` +
-      [12, 28, 44, 60].map((x) => `<rect class="stripe" x="${x}" y="-2.5" width="7" height="5"/>`).join('') +
+    SIDE(156, 0, 0),
+    `<g transform="translate(-91 -38)"><g class="boom">` +
+      `<rect class="f sd" x="-52" y="-2.5" width="52" height="5"/>` +
+      [-46, -32, -18].map((x) => `<rect class="stripe" x="${x}" y="-2.5" width="7" height="5"/>`).join('') +
       `</g></g>`,
   );
   return { viewBox: K.viewBox, svg };

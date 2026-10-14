@@ -90,33 +90,42 @@ const { viewBox, svg } = sparFigures[Astro.props.kind]();
   }
   .iso :global(.start .t) { fill: var(--c-accent); }
 
-  /* Act: press → signal → boom lifts, lamp on → boom drops. */
+  /* Act (5s): press → signal runs to the checkpoint → boom lifts, lamp on →
+     the waiting car drives through → boom drops → car returns to the stop line. */
   .iso :global(.btn .t) { fill: var(--c-accent); }
-  .iso :global(.btn) { animation: iso-press 4s infinite var(--iso-run); }
+  .iso :global(.btn) { animation: iso-press 5s infinite var(--iso-run); }
   @keyframes iso-press {
-    0%, 12%, 100% { transform: translateY(0); }
+    0%, 10%, 100% { transform: translateY(0); }
     4% { transform: translateY(2px); }
   }
-  .iso :global(.pulse--act) { animation: iso-pulse-act 4s linear infinite var(--iso-run); }
+  .iso :global(.pulse--act) { animation: iso-pulse-act 5s linear infinite var(--iso-run); }
   @keyframes iso-pulse-act {
     0%, 4% { stroke-dashoffset: 70; opacity: 1; }
-    26% { stroke-dashoffset: -1000; opacity: 1; }
-    27%, 100% { stroke-dashoffset: -1000; opacity: 0; }
+    24% { stroke-dashoffset: -1000; opacity: 1; }
+    25%, 100% { stroke-dashoffset: -1000; opacity: 0; }
   }
   .iso :global(.boom) {
     transform-box: view-box;
     transform-origin: 0 0;
-    animation: iso-boom 4s var(--ease) infinite var(--iso-run);
+    animation: iso-boom 5s var(--ease) infinite var(--iso-run);
   }
   @keyframes iso-boom {
-    0%, 26% { transform: rotate(0deg); }
-    40%, 78% { transform: rotate(-62deg); }
-    92%, 100% { transform: rotate(0deg); }
+    0%, 24% { transform: rotate(0deg); }
+    36%, 72% { transform: rotate(64deg); }
+    84%, 100% { transform: rotate(0deg); }
   }
-  .iso :global(.lamp .f) { animation: iso-lamp 4s infinite var(--iso-run); }
+  .iso :global(.lamp .f) { animation: iso-lamp 5s infinite var(--iso-run); }
   @keyframes iso-lamp {
-    0%, 30%, 86%, 100% { fill: var(--iso-front); stroke: var(--iso-line); }
-    36%, 80% { fill: var(--c-accent); stroke: var(--c-accent); }
+    0%, 26%, 80%, 100% { fill: var(--iso-front); stroke: var(--iso-line); }
+    32%, 74% { fill: var(--c-accent); stroke: var(--c-accent); }
+  }
+  .iso :global(.car) { animation: iso-car 5s var(--ease) infinite var(--iso-run); }
+  @keyframes iso-car {
+    0%, 38% { transform: translate(0, 0); opacity: 1; }
+    62% { transform: translate(var(--car-x), var(--car-y)); opacity: 1; }
+    68% { transform: translate(calc(var(--car-x) * 1.25), calc(var(--car-y) * 1.25)); opacity: 0; }
+    69%, 86% { transform: translate(0, 0); opacity: 0; }
+    100% { transform: translate(0, 0); opacity: 1; }
   }
 
   /* Reflect: light runs round the loop; the gap to intent blinks into the log. */
