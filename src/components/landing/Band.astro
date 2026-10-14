@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import landscape from '../../assets/landing/landscape-band.png';
+import AsciiField from './AsciiField.astro';
 import { t, type Locale } from '../../i18n/ui';
 
 interface Props {
@@ -11,6 +12,7 @@ const d = t(Astro.props.locale);
 
 <figure class="band">
   <Image src={landscape} alt={d.band.alt} widths={[768, 1440]} sizes="100vw" class="band__img" format="webp" />
+  <AsciiField src={landscape} amount={0.09} contour={0.6} />
 </figure>
 
 <style>

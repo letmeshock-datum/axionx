@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import backdrop from '../../assets/landing/media-backdrop.jpg';
-import pattern from '../../assets/landing/pattern-overlay.png';
+import AsciiField from './AsciiField.astro';
 import dashboard from '../../assets/landing/dashboard-ui.png';
 import { t, type Locale } from '../../i18n/ui';
 
@@ -15,7 +15,7 @@ const d = t(Astro.props.locale);
   <div class="showcase__frame">
     <Image src={backdrop} alt="" widths={[800, 1280, 2000, 2560]} sizes="(min-width: 1024px) 88.9vw, 100vw" class="showcase__backdrop" loading="eager" />
     <div class="showcase__blur" aria-hidden="true"></div>
-    <Image src={pattern} alt="" widths={[1440, 2560]} sizes="100vw" class="showcase__pattern" loading="eager" />
+    <AsciiField src={backdrop} amount={0.1} class="showcase__ascii" />
     <div class="showcase__glass">
       <Image
         src={dashboard}
@@ -62,20 +62,8 @@ const d = t(Astro.props.locale);
     backdrop-filter: blur(12.5rem);
   }
 
-  /* 1338:2992: 1440 × 810 code-glyph texture, overlay blend, centred. */
-  .showcase__pattern {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 112.5%;
-    height: auto;
-    aspect-ratio: 1440 / 810;
-    translate: -50% -50%;
-    object-fit: cover;
-    mix-blend-mode: overlay;
-    z-index: -1;
-    pointer-events: none;
-  }
+  /* 1338:2992 was a static code-glyph texture; it is now a live ASCII field read from the photo. */
+  .showcase__frame :global(.showcase__ascii) { z-index: -1; opacity: 0.9; }
 
   /* 1338:2993: 880px glass panel, padding/radius 24.76. */
   .showcase__glass {
