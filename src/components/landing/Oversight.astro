@@ -30,8 +30,22 @@ const arrows = [
   </div>
 
   <!-- Diagram plaque 1338:3066. Geometry is fixed left-to-right in every locale. -->
-  <figure class="plaque" aria-label={g.label}>
+  <figure class="plaque" aria-label={g.label} data-flow>
     <div class="diagram" dir="ltr">
+      <!-- Signal layer: pulses run along the arrows (Figma coordinates, 1230 × 392). -->
+      <svg class="signal" viewBox="0 0 1230 392" aria-hidden="true" focusable="false">
+        <defs>
+          <filter id="signal-glow" filterUnits="userSpaceOnUse" x="-50" y="-50" width="1330" height="492">
+            <feGaussianBlur stdDeviation="3" result="b" />
+            <feMerge><feMergeNode in="b" /><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+        </defs>
+        <path class="pulse pulse--agent" pathLength="1000" d="M 220 196 H 310" filter="url(#signal-glow)" />
+        <path class="pulse pulse--auto" pathLength="1000" d="M 421 140 V 56 H 620" filter="url(#signal-glow)" />
+        <path class="pulse pulse--person" pathLength="1000" d="M 421 252 V 325 H 620" filter="url(#signal-glow)" />
+        <path class="pulse pulse--rec-a" pathLength="1000" d="M 900 56 H 1110 V 140" filter="url(#signal-glow)" />
+        <path class="pulse pulse--rec-p" pathLength="1000" d="M 900 320 H 1110 V 252" filter="url(#signal-glow)" />
+      </svg>
       <div class="node node--agent">
         <p dir="auto" class="node__label">{g.agent.label}</p>
         <p dir="auto" class="node__text">{g.agent.text}</p>
@@ -245,6 +259,106 @@ const arrows = [
     color: var(--c-muted);
   }
 
+  /* ---------------- Signal ----------------
+     6s loop: agent → policy, → autonomous, then → person (accept), then both
+     → record together. Runs only while the plaque is on screen (.is-live). */
+  .signal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 76.875rem; /* 1230 */
+    height: 24.5rem; /* 392 */
+    overflow: visible;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .pulse {
+    fill: none;
+    stroke: var(--c-accent);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-dasharray: 140 1000;
+    stroke-dashoffset: 140;
+    opacity: 0;
+  }
+
+  .node { z-index: 1; transition: none; }
+
+  .is-live .pulse,
+  .is-live .node--policy,
+  .is-live .node--autonomous,
+  .is-live .node--person,
+  .is-live .node--record,
+  .is-live .decision--accept {
+    animation-duration: 6s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+  }
+
+  .is-live .pulse--agent { animation-name: sig-agent; }
+  .is-live .pulse--auto { animation-name: sig-auto; }
+  .is-live .pulse--person { animation-name: sig-person; }
+  .is-live .pulse--rec-a,
+  .is-live .pulse--rec-p { animation-name: sig-record; }
+
+  @keyframes sig-agent {
+    0% { stroke-dashoffset: 140; opacity: 1; }
+    11% { stroke-dashoffset: -1000; opacity: 1; }
+    11.1%, 100% { opacity: 0; }
+  }
+  @keyframes sig-auto {
+    0%, 13% { stroke-dashoffset: 140; opacity: 0; }
+    13.1% { opacity: 1; }
+    28% { stroke-dashoffset: -1000; opacity: 1; }
+    28.1%, 100% { opacity: 0; }
+  }
+  @keyframes sig-person {
+    0%, 29% { stroke-dashoffset: 140; opacity: 0; }
+    29.1% { opacity: 1; }
+    44% { stroke-dashoffset: -1000; opacity: 1; }
+    44.1%, 100% { opacity: 0; }
+  }
+  @keyframes sig-record {
+    0%, 54% { stroke-dashoffset: 140; opacity: 0; }
+    54.1% { opacity: 1; }
+    70% { stroke-dashoffset: -1000; opacity: 1; }
+    70.1%, 100% { opacity: 0; }
+  }
+
+  /* Nodes light as the signal reaches them. */
+  .is-live .node--policy { animation-name: lit-policy; }
+  .is-live .node--autonomous { animation-name: lit-auto; }
+  .is-live .node--person { animation-name: lit-person; }
+  .is-live .node--record { animation-name: lit-record; }
+  .is-live .decision--accept { animation-name: lit-accept; }
+
+  @keyframes lit-policy {
+    0%, 10%, 30%, 100% { border-color: var(--c-border); box-shadow: none; }
+    12%, 26% { border-color: var(--c-accent); box-shadow: 0 0 1.25rem rgba(198, 232, 0, 0.18); }
+  }
+  @keyframes lit-auto {
+    0%, 27%, 72%, 100% { border-color: var(--c-border); box-shadow: none; }
+    29%, 64% { border-color: var(--c-accent); box-shadow: 0 0 1.25rem rgba(198, 232, 0, 0.18); }
+  }
+  @keyframes lit-person {
+    0%, 43%, 72%, 100% { border-color: var(--c-accent-border); box-shadow: none; }
+    45%, 64% { border-color: var(--c-accent); box-shadow: 0 0 1.5rem rgba(198, 232, 0, 0.22); }
+  }
+  @keyframes lit-accept {
+    0%, 47%, 56%, 100% { box-shadow: none; filter: none; }
+    49%, 53% { box-shadow: 0 0 0.9rem rgba(198, 232, 0, 0.7); filter: brightness(1.15); }
+  }
+  @keyframes lit-record {
+    0%, 69%, 94%, 100% { border-color: var(--c-border); box-shadow: none; }
+    71%, 88% { border-color: var(--c-accent); box-shadow: 0 0 1.5rem rgba(198, 232, 0, 0.22); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .signal { display: none; }
+    .is-live .node, .is-live .decision--accept { animation: none; }
+  }
+
   /* ---------------- List ---------------- */
   /* Rows carry the design's black 15% hairlines (invisible on black, kept as drawn). */
   .row {
@@ -327,7 +441,8 @@ const arrows = [
     .edge--within { grid-column: 1; grid-row: 3; }
     .edge--signoff { grid-column: 2; grid-row: 3; }
     .node--record { grid-row: 5; }
-    .arrow { display: none; }
+    .arrow, .signal { display: none; }
+    .is-live .node, .is-live .decision--accept { animation: none; }
     .caption { position: static; width: auto; grid-column: span 2; order: 8; grid-row: 6; font-size: 1.0625rem; }
 
     .row { flex-direction: column; gap: 0.75rem; padding-block: 1.75rem; }
@@ -351,3 +466,11 @@ const arrows = [
     .row__name { font-size: 1.375rem; }
   }
 </style>
+
+<script>
+  // Run the signal only while the diagram is on screen.
+  for (const el of document.querySelectorAll<HTMLElement>('[data-flow]')) {
+    if (!('IntersectionObserver' in window)) { el.classList.add('is-live'); continue; }
+    new IntersectionObserver(([e]) => el.classList.toggle('is-live', !!e?.isIntersecting), { threshold: 0.25 }).observe(el);
+  }
+</script>
