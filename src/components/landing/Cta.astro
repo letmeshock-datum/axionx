@@ -52,13 +52,14 @@ const d = t(Astro.props.locale);
 
   .cta__btn:hover { background: #d4f21a; }
 
+  /* Full-bleed: sized to the viewport, not the (scaled) rem column. */
   .cta__mark {
-    height: 12.6875rem; /* 203px */
+    height: calc(100vw * 203 / 1440);
     overflow: hidden;
   }
 
   .cta__logo {
-    width: 88.615rem; /* 1417.84 × 230 */
+    width: calc(100vw * 1417.84 / 1440);
     max-width: none;
     height: auto;
   }
@@ -66,8 +67,6 @@ const d = t(Astro.props.locale);
   @media (max-width: 1023px) {
     .cta__top { flex-direction: column; padding-block: 8rem 2.5rem; }
     .cta__title { font-size: 4rem; white-space: normal; }
-    .cta__mark { height: calc(100vw * 203 / 1440); }
-    .cta__logo { width: calc(100vw * 1417.84 / 1440); }
   }
 
   @media (max-width: 767px) {

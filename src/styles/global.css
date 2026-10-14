@@ -24,7 +24,8 @@
 
   --tr-display: -0.02em;
   --tr: -0.01em;
-  --gutter: 5rem; /* 80px */
+  /* Desktop: an 80rem content column centred in the page (1120 of 1440px → 160px sides). */
+  --gutter: max(5rem, calc((100% - 80rem) / 2));
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
@@ -37,11 +38,13 @@
 }
 
 /* ------------------------------------------------------------------ */
-/*  Liquid rem: 1rem == 16px on the 1440 Figma frame, scaling with the  */
-/*  viewport; smaller breakpoints switch to their own base.             */
+/*  Liquid rem: the Figma frame is drawn at 16px = 1rem, rendered at    */
+/*  0.875 scale — 1rem == 14px at 1440 — so the 1280px design column    */
+/*  becomes 1120px with 160px sides. Everything in rem scales with it.  */
+/*  Smaller breakpoints switch to their own base.                       */
 /* ------------------------------------------------------------------ */
 html {
-  font-size: clamp(11px, 100vw / 90, 20px);
+  font-size: clamp(10px, 100vw / 102.857, 18px);
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   color-scheme: dark;
@@ -51,12 +54,12 @@ html {
 
 @media (max-width: 1023px) {
   html { font-size: clamp(14px, 100vw / 52, 17px); }
-  :root { --gutter: 2.5rem; }
+  :root { --gutter: 3.5rem; }
 }
 
 @media (max-width: 767px) {
   html { font-size: clamp(14px, 100vw / 24.375, 17px); } /* 16px @ 390 */
-  :root { --gutter: 1.25rem; }
+  :root { --gutter: 1.5rem; }
 }
 
 /* ------------------------------------------------------------------ */
@@ -140,7 +143,7 @@ button {
   line-height: 1.25 !important;
 }
 
-/* Section frame: 1280 content column inside 80px gutters. */
+/* Section frame: content column inside the page gutters. */
 .wrap {
   width: 100%;
   padding-inline: var(--gutter);
