@@ -15,14 +15,23 @@ export interface Feature {
   body: string;
 }
 
+export interface Section {
+  /** Stable anchor id, also used to keep accordion ids unique. */
+  id: string;
+  eyebrow: string;
+  title: string;
+  intro: string;
+  items: Feature[];
+  subline: string;
+}
+
 export interface Dictionary {
   meta: { title: string; description: string; ogAlt: string };
   nav: { briefing: string; copyEmail: string; copied: string };
-  hero: { title: string; intro: string };
-  features: Feature[];
+  sections: Section[];
   dashboard: { alt: string };
   footer: { deployed: string; copyright: string };
-  a11y: { home: string; language: string; features: string; skip: string };
+  a11y: { home: string; language: string; skip: string };
 }
 
 export const ui: Record<Locale, Dictionary> = {
@@ -30,7 +39,7 @@ export const ui: Record<Locale, Dictionary> = {
     meta: {
       title: 'Axion Gen — Axion',
       description:
-        'Combining generative business intelligence, geospatial, and agents intelligence in a single, simple interface.',
+        'Axion Gen is generative BI with a personal analytical agent. It reads live operational data, builds the analysis, and returns a plain-language answer with the chart to back it.',
       ogAlt: 'Axion Gen — generative BI, geospatial and agents intelligence in a single interface.',
     },
     nav: {
@@ -38,26 +47,84 @@ export const ui: Record<Locale, Dictionary> = {
       copyEmail: 'Copy email',
       copied: 'Email copied',
     },
-    hero: {
-      title: 'Axion Gen',
-      intro:
-        'Combining generative business intelligence, geospatial, and agents intelligence in a single, simple interface.',
-    },
-    features: [
+    sections: [
       {
-        title: 'Every street, every day.',
-        body:
-          'Cameras on vehicles already on the road keep the record current. No survey campaigns. No waiting for someone to complain. What gets fixed is decided by condition, not by the calendar. Problems are handled while they are still small, and still cheap.',
+        id: 'gen',
+        eyebrow: 'Axion Gen',
+        title: 'Ask. Get the answer, not a dashboard.',
+        intro:
+          'Axion Gen is generative BI with a personal analytical agent. It reads live operational data, builds the analysis, and returns a plain-language answer with the chart to back it.',
+        items: [
+          {
+            title: 'Natural-language queries',
+            body: 'Questions in, findings out. No query builders, no report requests.',
+          },
+          {
+            title: 'A personal agent that remembers',
+            body: 'It learns the metrics, districts, and priorities that matter and keeps them in context.',
+          },
+          {
+            title: 'Every number traceable',
+            body: 'Each answer links back to its source rows and the logic that produced it.',
+          },
+          {
+            title: 'Runs on-premises',
+            body: 'Data stays inside the organization’s perimeter.',
+          },
+        ],
+        subline: 'Dashboards show what happened. Axion Gen explains why — and what to do next.',
       },
       {
-        title: 'AI agents watch. People decide.',
-        body:
-          'Agents find what slipped and keep it moving. Every decision with consequences stays with a person.',
+        id: 'spar',
+        eyebrow: 'SPAR',
+        title: 'One loop behind every agent',
+        intro:
+          'SPAR — Sense, Plan, Act, Reflect — is the operating cycle every Axion agent runs. It turns raw signals into accountable actions, continuously.',
+        items: [
+          {
+            title: 'Sense',
+            body: 'Ingest signals from field sensors, smartphones, and enterprise systems.',
+          },
+          {
+            title: 'Plan',
+            body: 'Reason over context and constraints; propose an action with its rationale.',
+          },
+          {
+            title: 'Act',
+            body: 'Execute through connected systems, or hand off for approval.',
+          },
+          {
+            title: 'Reflect',
+            body: 'Compare outcome to intent, log the gap, and refine the next cycle.',
+          },
+        ],
+        subline: 'Not a pipeline. A loop — every action feeds the next decision.',
       },
       {
-        title: 'The record belongs to the city.',
-        body:
-          'It runs inside the city’s own walls, and opens to planners, utilities and partners on the city’s terms.',
+        id: 'oversight',
+        eyebrow: 'Human-in-the-loop',
+        title: 'Agents propose. People decide.',
+        intro:
+          'Axion is built on human-in-the-loop oversight. Agents prepare, reason, and recommend — a person approves what matters, and sees exactly why it was proposed.',
+        items: [
+          {
+            title: 'Narrative View',
+            body: 'Every proposed action arrives with its full chain of reasoning in plain language.',
+          },
+          {
+            title: 'Approval by policy',
+            body: 'Set which decisions run autonomously and which wait for sign-off.',
+          },
+          {
+            title: 'Override with a record',
+            body: 'Accept, edit, or reject; every intervention is logged and fed back into the loop.',
+          },
+          {
+            title: 'Full interpretability',
+            body: 'No black-box steps between data and decision.',
+          },
+        ],
+        subline: 'Autonomy where it’s safe. Accountability everywhere else.',
       },
     ],
     dashboard: {
@@ -70,7 +137,6 @@ export const ui: Record<Locale, Dictionary> = {
     a11y: {
       home: 'Axion — home',
       language: 'Language',
-      features: 'What Axion Gen does',
       skip: 'Skip to content',
     },
   },
@@ -78,7 +144,7 @@ export const ui: Record<Locale, Dictionary> = {
     meta: {
       title: 'Axion Gen — أكسيون',
       description:
-        'يجمع بين ذكاء الأعمال التوليدي والذكاء الجغرافي المكاني وذكاء الوكلاء في واجهة واحدة بسيطة.',
+        'Axion Gen منصة ذكاء أعمال توليدي مع وكيل تحليلي شخصي. يقرأ البيانات التشغيلية الحيّة، ويُعدّ التحليل، ويقدّم إجابة بلغة واضحة مع الرسم البياني الذي يدعمها.',
       ogAlt: 'Axion Gen — ذكاء الأعمال التوليدي والجغرافي المكاني ووكلاء الذكاء الاصطناعي في واجهة واحدة.',
     },
     nav: {
@@ -86,26 +152,84 @@ export const ui: Record<Locale, Dictionary> = {
       copyEmail: 'نسخ البريد الإلكتروني',
       copied: 'تم نسخ البريد',
     },
-    hero: {
-      title: 'Axion Gen',
-      intro:
-        'يجمع بين ذكاء الأعمال التوليدي والذكاء الجغرافي المكاني وذكاء الوكلاء في واجهة واحدة بسيطة.',
-    },
-    features: [
+    sections: [
       {
-        title: 'كل شارع، كل يوم.',
-        body:
-          'كاميرات مثبّتة على مركبات تسير في الطرق أصلًا تُبقي السجل محدّثًا باستمرار. لا حملات مسح ميداني. لا انتظار لشكوى من أحد. ما يُصلَح تحدّده حالة الأصل، لا التقويم. تُعالَج المشكلات وهي ما تزال صغيرة، وما تزال رخيصة.',
+        id: 'gen',
+        eyebrow: 'Axion Gen',
+        title: 'اسأل. واحصل على الإجابة، لا على لوحة مؤشرات.',
+        intro:
+          'Axion Gen منصة ذكاء أعمال توليدي مع وكيل تحليلي شخصي. يقرأ البيانات التشغيلية الحيّة، ويُعدّ التحليل، ويقدّم إجابة بلغة واضحة مع الرسم البياني الذي يدعمها.',
+        items: [
+          {
+            title: 'استعلامات باللغة الطبيعية',
+            body: 'أسئلة تدخل، ونتائج تخرج. لا أدوات لبناء الاستعلامات، ولا طلبات تقارير.',
+          },
+          {
+            title: 'وكيل شخصي يتذكّر',
+            body: 'يتعلّم المؤشرات والأحياء والأولويات المهمّة، ويُبقيها حاضرة في السياق.',
+          },
+          {
+            title: 'كل رقم قابل للتتبّع',
+            body: 'كل إجابة ترتبط بصفوف البيانات المصدرية وبالمنطق الذي أنتجها.',
+          },
+          {
+            title: 'يعمل داخل مقرّ المؤسسة',
+            body: 'تبقى البيانات داخل النطاق الأمني للمؤسسة.',
+          },
+        ],
+        subline: 'لوحات المؤشرات تُظهر ما حدث. أمّا Axion Gen فيشرح لماذا حدث، وما الخطوة التالية.',
       },
       {
-        title: 'وكلاء الذكاء الاصطناعي يراقبون. والبشر يقرّرون.',
-        body:
-          'يرصد الوكلاء ما فات ويُبقونه قيد المتابعة. وكل قرار له تبعات يبقى بيد إنسان.',
+        id: 'spar',
+        eyebrow: 'SPAR',
+        title: 'حلقة واحدة وراء كل وكيل',
+        intro:
+          'SPAR — الاستشعار، التخطيط، التنفيذ، المراجعة — هي دورة التشغيل التي يعمل بها كل وكيل في Axion. تحوّل الإشارات الخام إلى إجراءات خاضعة للمساءلة، باستمرار.',
+        items: [
+          {
+            title: 'الاستشعار',
+            body: 'استقبال الإشارات من المستشعرات الميدانية والهواتف الذكية وأنظمة المؤسسة.',
+          },
+          {
+            title: 'التخطيط',
+            body: 'التفكير في السياق والقيود، واقتراح إجراء مع مبرّراته.',
+          },
+          {
+            title: 'التنفيذ',
+            body: 'التنفيذ عبر الأنظمة المتصلة، أو الإحالة للاعتماد.',
+          },
+          {
+            title: 'المراجعة',
+            body: 'مقارنة النتيجة بالهدف، وتسجيل الفجوة، وتحسين الدورة التالية.',
+          },
+        ],
+        subline: 'ليست مسار معالجة. بل حلقة — كل إجراء يغذّي القرار التالي.',
       },
       {
-        title: 'السجل ملك للمدينة.',
-        body:
-          'يعمل داخل أسوار المدينة نفسها، ويُفتح للمخطّطين والمرافق والشركاء وفق شروط المدينة.',
+        id: 'oversight',
+        eyebrow: 'الإنسان في الحلقة',
+        title: 'الوكلاء يقترحون. والبشر يقرّرون.',
+        intro:
+          'بُني Axion على إشراف الإنسان في الحلقة. يُعدّ الوكلاء التحليل ويستدلّون ويوصون، ويعتمد الإنسان ما هو مهم، ويرى بدقة لماذا اقتُرح.',
+        items: [
+          {
+            title: 'العرض السردي',
+            body: 'يصل كل إجراء مقترح مع سلسلة الاستدلال الكاملة بلغة واضحة.',
+          },
+          {
+            title: 'الاعتماد وفق السياسات',
+            body: 'حدّد القرارات التي تُنفَّذ تلقائيًا، وتلك التي تنتظر الاعتماد.',
+          },
+          {
+            title: 'التجاوز مع سجلّ',
+            body: 'اقبل أو عدّل أو ارفض؛ تُسجَّل كل مداخلة وتعود إلى الحلقة.',
+          },
+          {
+            title: 'قابلية تفسير كاملة',
+            body: 'لا خطوات غامضة بين البيانات والقرار.',
+          },
+        ],
+        subline: 'استقلالية حيث تكون آمنة. ومساءلة في كل ما عدا ذلك.',
       },
     ],
     dashboard: {
@@ -118,7 +242,6 @@ export const ui: Record<Locale, Dictionary> = {
     a11y: {
       home: 'أكسيون — الصفحة الرئيسية',
       language: 'اللغة',
-      features: 'ما يقدّمه Axion Gen',
       skip: 'الانتقال إلى المحتوى',
     },
   },

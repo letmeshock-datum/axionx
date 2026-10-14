@@ -1,25 +1,27 @@
 ---
 import { SITE } from '../site.config';
-import { t, type Locale } from '../i18n/ui';
+import type { Feature } from '../i18n/ui';
 
 interface Props {
-  locale: Locale;
+  items: Feature[];
+  /** Unique per page, keeps trigger/panel ids distinct when several sliders render. */
+  idPrefix: string;
+  label: string;
 }
-const { locale } = Astro.props;
-const d = t(locale);
+const { items, idPrefix, label } = Astro.props;
 ---
 
 <section
   class="features"
-  aria-label={d.a11y.features}
+  aria-label={label}
   data-features
   data-interval={SITE.sliderInterval}
 >
   <ol class="features__list" role="list">
     {
-      d.features.map((f, i) => {
+      items.map((f, i) => {
         const active = i === 0;
-        const id = `feature-${i + 1}`;
+        const id = `${idPrefix}-item-${i + 1}`;
         return (
           <li class:list={['feature', { 'is-active': active }]} data-feature>
             <span class="feature__progress" aria-hidden="true" />

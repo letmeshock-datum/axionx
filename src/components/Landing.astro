@@ -1,88 +1,61 @@
 ---
 import Base from '../layouts/Base.astro';
 import Header from './Header.astro';
-import Hero from './Hero.astro';
-import FeatureSlider from './FeatureSlider.astro';
+import Section from './Section.astro';
 import Dashboard from './Dashboard.astro';
 import Footer from './Footer.astro';
-import type { Locale } from '../i18n/ui';
+import { t, type Locale } from '../i18n/ui';
 
 interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
+const d = t(locale);
 
-// Product UI screenshot is hidden for now. Set to true to bring it back.
+// Product UI screenshot is hidden for now. Set to true to show it under the first section.
 const showDashboard = false;
 ---
 
 <Base locale={locale}>
   <Header locale={locale} />
   <main id="main" class="main">
-    <div class:list={['grid', { 'grid--no-media': !showDashboard }]}>
-      <div class="grid__hero"><Hero locale={locale} /></div>
-      {showDashboard && <div class="grid__media"><Dashboard locale={locale} /></div>}
-      <div class="grid__features"><FeatureSlider locale={locale} /></div>
-    </div>
+    {
+      d.sections.map((section, i) => (
+        <>
+          <Section section={section} primary={i === 0} />
+          {i === 0 && showDashboard && (
+            <div class="media">
+              <Dashboard locale={locale} />
+            </div>
+          )}
+        </>
+      ))
+    }
   </main>
   <Footer locale={locale} />
 </Base>
 
 <style>
   .main {
-    padding: 8.75rem var(--gutter) 3rem; /* header 50 → hero 190 */
+    display: flex;
+    flex-direction: column;
+    gap: 11.25rem; /* section rhythm */
+    padding: 8.75rem var(--gutter) 9rem; /* header 50 → hero 190 */
   }
 
-  .grid {
-    display: grid;
-    grid-template-columns: 31.25rem minmax(0, 1fr); /* 500px | image */
-    grid-template-areas:
-      'hero media'
-      'features media';
-    column-gap: 3.75rem;
-    row-gap: 6.625rem; /* intro 273 → list 379 */
-    align-items: start;
-  }
-
-  .grid--no-media {
-    grid-template-columns: minmax(0, 31.25rem);
-    grid-template-areas:
-      'hero'
-      'features';
-  }
-
-  .grid__hero { grid-area: hero; }
-  .grid__features { grid-area: features; }
-  .grid__media {
-    grid-area: media;
-    justify-self: end;
+  .media {
     width: 100%;
     max-width: 50.166rem;
+    margin-top: -5rem;
   }
 
   @media (max-width: 1023px) {
-    .main { padding-top: 4.5rem; }
-    .grid {
-      grid-template-columns: minmax(0, 1fr);
-      grid-template-areas:
-        'hero'
-        'media'
-        'features';
-      row-gap: 2.5rem;
-    }
-    .grid--no-media {
-      grid-template-areas:
-        'hero'
-        'features';
-    }
-    .grid__media {
-      justify-self: stretch;
-      max-width: 100%;
-    }
+    .main { gap: 7rem; padding-top: 4.5rem; padding-bottom: 6rem; }
+    .media { margin-top: -3rem; }
   }
 
   @media (max-width: 767px) {
-    .main { padding-top: 3.5rem; padding-bottom: 2rem; }
-    .grid { row-gap: 2.25rem; }
+    .main { gap: 5.5rem; padding-top: 3.5rem; padding-bottom: 4.5rem; }
+    .media { margin-top: -2.5rem; }
   }
 </style>
