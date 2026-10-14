@@ -1,0 +1,153 @@
+---
+import { sparFigures, type SparKind } from '../../lib/spar-figures';
+
+interface Props {
+  kind: SparKind;
+}
+const { viewBox, svg } = sparFigures[Astro.props.kind]();
+---
+
+<svg class={`iso iso--${Astro.props.kind}`} viewBox={viewBox} aria-hidden="true" focusable="false" set:html={svg} />
+
+<style>
+  /* Hairline monochrome; the accent appears only on what is live. */
+  .iso {
+    --iso-top: #1c1c1c;
+    --iso-front: #151515;
+    --iso-side: #101010;
+    --iso-line: rgba(255, 255, 255, 0.34);
+    --iso-detail: rgba(255, 255, 255, 0.16);
+    --iso-run: paused; /* set to running by the parent while revealed */
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .iso :global(*) { vector-effect: non-scaling-stroke; }
+  .iso :global(.f) { stroke: var(--iso-line); stroke-width: 1; stroke-linejoin: round; }
+  .iso :global(.t) { fill: var(--iso-top); }
+  .iso :global(.fr) { fill: var(--iso-front); }
+  .iso :global(.sd) { fill: var(--iso-side); }
+  .iso :global(.plate .t) { fill: #171717; }
+  .iso :global(.d) { fill: none; stroke: var(--iso-detail); stroke-width: 1; }
+  .iso :global(.d--on) { stroke: var(--c-accent); opacity: 0.55; }
+  .iso :global(.dot) { fill: var(--iso-detail); }
+  .iso :global(.w) { fill: none; stroke: var(--iso-line); stroke-width: 1; }
+  .iso :global(.w--alt) { stroke: var(--iso-detail); stroke-dasharray: 3 3; }
+  .iso :global(.hot) { fill: var(--c-accent); }
+  .iso :global(.scr) { fill: color-mix(in srgb, var(--c-accent) 14%, #101010); stroke: var(--iso-line); }
+  .iso :global(.stripe) { fill: var(--iso-detail); }
+
+  /* Travelling light along wires (pathLength = 1000). */
+  /* pathLength-based dashes must scale with the plane, so no non-scaling-stroke here. */
+  .iso :global(.pulse),
+  .iso :global(.route),
+  .iso :global(.ring) {
+    vector-effect: none;
+    fill: none;
+    stroke: var(--c-accent);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  .iso :global(.pulse) {
+    stroke-dasharray: 70 1000;
+    stroke-dashoffset: 70;
+    animation: iso-pulse 1.8s linear infinite var(--iso-run);
+  }
+  .iso :global(.pulse--1) { animation-delay: -0.6s; }
+  .iso :global(.pulse--2) { animation-delay: -1.2s; }
+
+  @keyframes iso-pulse {
+    from { stroke-dashoffset: 70; }
+    to { stroke-dashoffset: -1000; }
+  }
+
+  .iso :global(.blink) { animation: iso-blink 1.2s steps(2, jump-none) infinite var(--iso-run); }
+  @keyframes iso-blink { 50% { opacity: 0.2; } }
+
+  /* Plan: the proposed route draws itself in, then the flag lights. */
+  .iso :global(.route) {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: iso-route 3.2s var(--ease) infinite var(--iso-run);
+  }
+  @keyframes iso-route {
+    0% { stroke-dashoffset: 1000; opacity: 1; }
+    55%, 85% { stroke-dashoffset: 0; opacity: 1; }
+    100% { stroke-dashoffset: 0; opacity: 0; }
+  }
+  .iso :global(.flag) {
+    fill: var(--iso-front);
+    stroke: var(--iso-line);
+    animation: iso-flag 3.2s infinite var(--iso-run);
+  }
+  @keyframes iso-flag {
+    0%, 50% { fill: var(--iso-front); }
+    56%, 92% { fill: var(--c-accent); stroke: var(--c-accent); }
+    100% { fill: var(--iso-front); }
+  }
+  .iso :global(.start .t) { fill: var(--c-accent); }
+
+  /* Act: press → signal → boom lifts, lamp on → boom drops. */
+  .iso :global(.btn .t) { fill: var(--c-accent); }
+  .iso :global(.btn) { animation: iso-press 4s infinite var(--iso-run); }
+  @keyframes iso-press {
+    0%, 12%, 100% { transform: translateY(0); }
+    4% { transform: translateY(2px); }
+  }
+  .iso :global(.pulse--act) { animation: iso-pulse-act 4s linear infinite var(--iso-run); }
+  @keyframes iso-pulse-act {
+    0%, 4% { stroke-dashoffset: 70; opacity: 1; }
+    26% { stroke-dashoffset: -1000; opacity: 1; }
+    27%, 100% { stroke-dashoffset: -1000; opacity: 0; }
+  }
+  .iso :global(.boom) {
+    transform-box: view-box;
+    transform-origin: 0 0;
+    animation: iso-boom 4s var(--ease) infinite var(--iso-run);
+  }
+  @keyframes iso-boom {
+    0%, 26% { transform: rotate(0deg); }
+    40%, 78% { transform: rotate(-62deg); }
+    92%, 100% { transform: rotate(0deg); }
+  }
+  .iso :global(.lamp .f) { animation: iso-lamp 4s infinite var(--iso-run); }
+  @keyframes iso-lamp {
+    0%, 30%, 86%, 100% { fill: var(--iso-front); stroke: var(--iso-line); }
+    36%, 80% { fill: var(--c-accent); stroke: var(--c-accent); }
+  }
+
+  /* Reflect: light runs round the loop; the gap to intent blinks into the log. */
+  .iso :global(.ring) {
+    stroke-dasharray: 140 1000;
+    animation: iso-ring 3.6s linear infinite var(--iso-run);
+  }
+  @keyframes iso-ring {
+    from { stroke-dashoffset: 0; }
+    to { stroke-dashoffset: -1000; }
+  }
+  .iso :global(.dot--ring) { fill: var(--iso-line); }
+  .iso :global(.ghost .f) { fill: none; stroke: var(--iso-line); stroke-dasharray: 3 3; }
+  .iso :global(.gap .f) {
+    fill: color-mix(in srgb, var(--c-accent) 14%, transparent);
+    stroke: var(--c-accent);
+    stroke-dasharray: 3 2;
+    animation: iso-blink 1.2s steps(2, jump-none) infinite var(--iso-run);
+  }
+  .iso :global(.gap-mark),
+  .iso :global(.entry) { stroke: var(--c-accent); stroke-width: 1.5; }
+  .iso :global(.entry) { animation: iso-entry 3.6s infinite var(--iso-run); }
+  @keyframes iso-entry {
+    0%, 40% { opacity: 0; }
+    50%, 100% { opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .iso :global(*) { animation: none !important; }
+    .iso :global(.route) { stroke-dashoffset: 0; }
+    .iso :global(.pulse) { stroke-dashoffset: -400; }
+    .iso :global(.flag), .iso :global(.lamp .f) { fill: var(--c-accent); stroke: var(--c-accent); }
+  }
+</style>

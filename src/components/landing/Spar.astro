@@ -1,10 +1,13 @@
 ---
+import SparFigure from './SparFigure.astro';
+import type { SparKind } from '../../lib/spar-figures';
 import { t, type Locale } from '../../i18n/ui';
 
 interface Props {
   locale: Locale;
 }
 const d = t(Astro.props.locale);
+const kinds: SparKind[] = ['sense', 'plan', 'act', 'reflect'];
 ---
 
 <section class="spar wrap" id="spar" aria-labelledby="spar-title">
@@ -14,14 +17,18 @@ const d = t(Astro.props.locale);
   </div>
   <ol class="spar__steps">
     {
-      d.spar.steps.map((s) => (
-        <li class="step">
+      d.spar.steps.map((s, i) => (
+        <li class="step" tabindex="0" data-step>
+          <div class="step__fig">
+            <SparFigure kind={kinds[i]!} />
+          </div>
           <h3 class="step__title">{s.title}</h3>
           <p class="step__body">{s.body}</p>
         </li>
       ))
     }
   </ol>
+  <p class="spar__credit"><a href="https://iso-glow.vercel.app" target="_blank" rel="noopener">Illustrations made with ISO-GLOW ↗</a></p>
   <p class="spar__statement display">
     <span class="spar__accent">{d.spar.accent}</span>{d.spar.rest}
   </p>
@@ -75,6 +82,58 @@ const d = t(Astro.props.locale);
     background: var(--c-surface-subtle);
   }
 
+  /* Illustration: hidden until the tile is hovered or focused (or, on touch, centred on screen). */
+  .step { position: relative; outline-offset: 0.25rem; }
+
+  .step__fig {
+    margin-bottom: auto;
+    padding: 0.5rem 0.5rem 1rem;
+    opacity: 0;
+    transform: translateY(0.5rem) scale(0.97);
+    transition:
+      opacity 0.45s var(--ease),
+      transform 0.6s var(--ease);
+    pointer-events: none;
+  }
+
+  .step.is-revealed .step__fig,
+  .step:focus-visible .step__fig {
+    opacity: 1;
+    transform: none;
+  }
+
+  .step.is-revealed :global(.iso),
+  .step:focus-visible :global(.iso) { --iso-run: running; }
+
+  @media (hover: hover) {
+    .step:hover .step__fig { opacity: 1; transform: none; }
+    .step:hover :global(.iso) { --iso-run: running; }
+  }
+
+  .step { transition: background-color 0.35s var(--ease); }
+  @media (hover: hover) {
+    .step:hover { background: rgba(255, 255, 255, 0.07); }
+  }
+
+  .spar__credit {
+    margin-top: -1.75rem;
+    text-align: end;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+  }
+
+  .spar__credit a {
+    color: var(--c-label);
+    text-decoration: none;
+  }
+
+  .spar__credit a:hover { color: var(--c-muted); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .step__fig { transform: none; }
+  }
+
   .step__title {
     font-size: 1.25rem;
     font-weight: 700;
@@ -112,6 +171,18 @@ const d = t(Astro.props.locale);
     .spar__intro { font-size: 1.125rem; }
     .spar__steps { grid-template-columns: minmax(0, 1fr); }
     .step { min-height: 0; padding: 1.25rem; }
+    .step__fig { width: min(100%, 20rem); margin-inline: auto; }
     .step__body { font-size: 1.0625rem; line-height: 1.45; }
   }
 </style>
+
+<script>
+  // Touch screens have no hover: reveal the tile whose middle crosses the centre band of the screen.
+  if (!window.matchMedia('(hover: hover)').matches && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.target.classList.toggle('is-revealed', e.isIntersecting)),
+      { rootMargin: '-35% 0px -35% 0px' },
+    );
+    document.querySelectorAll('[data-step]').forEach((el) => io.observe(el));
+  }
+</script>
