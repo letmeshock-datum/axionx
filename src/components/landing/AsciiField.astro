@@ -89,7 +89,8 @@ const sample = await getImage({ src, width: 720, format: 'webp' });
       const box = canvas.getBoundingClientRect();
       w = Math.max(1, Math.round(box.width));
       h = Math.max(1, Math.round(box.height));
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      // Cap the backing store for very large canvases (e.g. a full photo behind a parallax strip).
+      dpr = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(4.5e6 / (w * h)));
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
       cols = Math.ceil(w / cellW);
