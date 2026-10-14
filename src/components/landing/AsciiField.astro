@@ -62,6 +62,8 @@ const sample = await getImage({ src, width: 720, format: 'webp' });
     '"twin_id":"TWN-PK-00095" "asset":"park lighting, zone 3" "city":"Dammam" "status":"nominal" "condition_score":84 "detections":2',
   ];
 
+  const RIPPLE_SPEED = 0.5; // ripple tempo (1 = original pace; halved on request)
+
   type Cell = { i: number; c: number; r: number; s: number; col: string; lum: number };
 
   // Small deterministic value noise.
@@ -167,7 +169,7 @@ const sample = await getImage({ src, width: 720, format: 'webp' });
     }
 
     function draw(now: number) {
-      const t = (now - t0) / 1000;
+      const t = ((now - t0) / 1000) * RIPPLE_SPEED;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
       ctx.font = `500 ${cellH}px ${monoFamily()}`;
