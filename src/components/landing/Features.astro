@@ -15,10 +15,10 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
 ---
 
 <!--
-  Scroll-driven carousel (Figma 1338:2997 + dialogs 1340:6558).
-  Desktop: the block pins while the page scrolls; each quarter of the travel
-  activates the next card and slides the next Axsi dialog to the centre.
-  Below 1024px: no pinning, the dialogs swipe horizontally and drive the cards.
+  Scroll-driven 3D carousel (after Codrops "3D Carousel", MIT; Figma 1338:2997 + dialogs 1340:6558).
+  Desktop: the block pins; the scroll turns a ring of four Axsi dialogs (90° apart) through 275°.
+  The panel facing the viewer is sharp, the rest blur and dim with their angle; the matching card
+  on the left lights. Below 1024px: no pinning, the dialogs swipe horizontally and drive the cards.
 -->
 <section class="fx" data-fx aria-label={d.features.label}>
   <div class="fx__pin wrap">
@@ -43,18 +43,20 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     <div class="fx__panel">
       <Image src={pattern} alt="" widths={[1440, 2560]} sizes="100vw" class="fx__pattern" />
       <div class="fx__viewport" data-fx-viewport dir="ltr">
-        <ol class="fx__track" data-fx-track>
+        <ol class="fx__ring" data-fx-ring>
           {
             dialogs.map((img, i) => (
-              <li class:list={['dialog', { 'is-active': i === 0 }]} data-fx-dialog={i}>
-                <Image
-                  src={img}
-                  alt={d.features.dialogAlt[i]}
-                  widths={[372, 744]}
-                  sizes="23.25rem"
-                  class="dialog__img"
-                  loading={i < 2 ? 'eager' : 'lazy'}
-                />
+              <li class:list={['fx__cell', { 'is-active': i === 0 }]} data-fx-dialog={i} style={`--a: ${i * 90}deg`}>
+                <figure class="dialog">
+                  <Image
+                    src={img}
+                    alt={d.features.dialogAlt[i]}
+                    widths={[372, 744]}
+                    sizes="23.25rem"
+                    class="dialog__img"
+                    loading={i < 2 ? 'eager' : 'lazy'}
+                  />
+                </figure>
               </li>
             ))
           }
@@ -65,12 +67,13 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
 </section>
 
 <style>
-  /* Pin travel: one step ≈ 70% of the viewport per extra card. */
   .fx {
-    --step: 28.625rem; /* dialog pitch: 693 − 235 px in Figma */
     --panel-h: 41.75rem; /* 668px */
+    --card-w: 23.4266rem; /* 374.83px dialog */
+    --r: 21rem; /* ring radius */
     position: relative;
-    height: calc(var(--panel-h) + 3 * 70svh);
+    /* Pinned travel: the ring turns 275° over ~3 viewports of scroll. */
+    height: calc(var(--panel-h) + 3 * 75svh);
   }
 
   .fx__pin {
@@ -124,7 +127,7 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     text-wrap: pretty;
   }
 
-  /* 1338:3019 — warm gradient panel that clips the dialogs. */
+  /* 1338:3019 — warm gradient panel that frames and clips the ring. */
   .fx__panel {
     position: relative;
     flex: 1 1 0;
@@ -162,44 +165,50 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
   .fx__viewport {
     position: absolute;
     inset: 0;
+    perspective: 64rem; /* ≈ 900px */
+    perspective-origin: 50% 30%;
   }
 
-  /* Track origin = the centred slot (x 235 of 844); cards sit one pitch apart. */
-  .fx__track {
+  /* The ring: pulled back by its radius so the front panel lands at true size. */
+  .fx__ring {
     position: absolute;
     top: 1.5rem;
-    left: calc(50% - 11.7133rem);
-    display: flex;
-    gap: calc(var(--step) - 23.4266rem);
-    transform: translateX(calc(var(--i, 0) * var(--step) * -1));
-    transition: transform 0.7s var(--ease);
+    left: calc(50% - var(--card-w) / 2);
+    width: var(--card-w);
+    height: 56.375rem;
+    transform-style: preserve-3d;
+    transform: translateZ(calc(var(--r) * -1)) rotateX(var(--tilt, 0deg)) rotateZ(var(--tilt, 0deg))
+      rotateY(var(--rot, 0deg));
     will-change: transform;
   }
 
-  .dialog {
-    flex: none;
-    width: 23.4266rem; /* 374.83px */
-    border: 1px solid #e88652;
-    border-radius: 1.5rem;
-    background: rgba(0, 0, 0, 0.4);
-    -webkit-backdrop-filter: blur(6.25rem);
-    backdrop-filter: blur(6.25rem);
-    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.25);
-    overflow: hidden;
-    filter: blur(10px);
-    transition: filter 0.6s var(--ease);
+  .fx__cell {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform: rotateY(var(--a)) translateZ(var(--r));
   }
 
-  .dialog.is-active { filter: none; }
+  .dialog {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #e88652;
+    border-radius: 1.5rem;
+    background: rgba(24, 12, 6, 0.55);
+    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    backface-visibility: hidden;
+    filter: blur(var(--blur, 0px)) brightness(var(--dim, 1));
+  }
 
   .dialog__img {
     display: block;
     width: 100%;
-    height: 56.375rem; /* 902px — the panel crops the bottom */
+    height: 100%;
     object-fit: cover;
   }
 
-  /* ---------- Below desktop: swipe carousel, no pinning ---------- */
+  /* ---------- Below desktop: swipe carousel, no pinning, no 3D ---------- */
   @media (max-width: 1023px) {
     .fx { height: auto; --panel-h: 36rem; }
     .fx__pin {
@@ -218,6 +227,7 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     .fx__panel { flex: none; }
 
     .fx__viewport {
+      perspective: none;
       overflow-x: auto;
       overscroll-behavior-x: contain;
       scroll-snap-type: x mandatory;
@@ -225,73 +235,121 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     }
     .fx__viewport::-webkit-scrollbar { display: none; }
 
-    .fx__track {
+    .fx__ring {
       position: static;
-      width: max-content;
-      padding: 1.5rem calc(50% - 9.25rem) 0;
+      display: flex;
       gap: 1rem;
+      width: max-content;
+      height: auto;
+      padding: 1.5rem calc(50% - 9.25rem) 0;
       transform: none;
-      transition: none;
+      transform-style: flat;
     }
-    .dialog {
+    .fx__cell {
+      position: static;
+      flex: none;
       width: 18.5rem;
+      transform: none;
       scroll-snap-align: center;
-      filter: none;
       opacity: 0.45;
       transition: opacity 0.4s var(--ease);
     }
-    .dialog.is-active { opacity: 1; }
-    .dialog__img { height: 44.6rem; }
+    .fx__cell.is-active { opacity: 1; }
+    .dialog { height: 44.6rem; filter: none; }
   }
 
   @media (max-width: 767px) {
     .fx { --panel-h: 31rem; }
     .fx__cards { grid-template-columns: minmax(0, 1fr); gap: 0.25rem; }
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    .fx__track, .dialog { transition: none; }
-  }
 </style>
 
 <script>
   const desktop = window.matchMedia('(min-width: 1024px)');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const TURN = 275; // degrees over the whole pinned travel
+  const STEP = 90; // degrees between dialogs
+  const SHARP = 8; // within this many degrees of the front a panel is fully in focus
+
+  // Scroll progress → ring angle. Each panel dwells facing the viewer for a stretch of scroll,
+  // then the ring eases to the next one; the last 5° of the 275° turn drift in at the very end.
+  const ease = (x: number) => x * x * (3 - 2 * x);
+  function angleFor(p: number) {
+    const turns = 3; // 0° → 270°
+    const main = Math.min(p / 0.92, 1) * turns;
+    const i = Math.min(Math.floor(main), turns - 1);
+    const f = main - i;
+    const hold = 0.28; // share of each step spent dwelling at each end
+    const g = f <= hold ? 0 : f >= 1 - hold ? 1 : ease((f - hold) / (1 - 2 * hold));
+    const tail = Math.max(0, (p - 0.92) / 0.08) * (TURN - turns * STEP);
+    return -((i + g) * STEP + tail);
+  }
+  // Inverse for card clicks: the middle of panel i's dwell.
+  const progressFor = (i: number) => (i / 3) * 0.92;
 
   for (const root of document.querySelectorAll<HTMLElement>('[data-fx]')) {
     const pin = root.querySelector<HTMLElement>('.fx__pin')!;
-    const track = root.querySelector<HTMLElement>('[data-fx-track]')!;
+    const ring = root.querySelector<HTMLElement>('[data-fx-ring]')!;
     const viewport = root.querySelector<HTMLElement>('[data-fx-viewport]')!;
     const cards = [...root.querySelectorAll<HTMLButtonElement>('[data-fx-card]')];
-    const dialogs = [...root.querySelectorAll<HTMLElement>('[data-fx-dialog]')];
-    const count = dialogs.length;
+    const cells = [...root.querySelectorAll<HTMLElement>('[data-fx-dialog]')];
+    const dialogs = cells.map((c) => c.querySelector<HTMLElement>('.dialog')!);
     let active = 0;
-    let ticking = false;
+    let rot = 0; // rendered angle
+    let target = 0; // angle the scroll asks for
+    let raf = 0;
+    let inView = false;
 
     function setActive(i: number) {
       if (i === active) return;
       active = i;
-      track.style.setProperty('--i', String(i));
       cards.forEach((c, k) => {
         c.classList.toggle('is-active', k === i);
         c.setAttribute('aria-current', String(k === i));
       });
-      dialogs.forEach((dl, k) => dl.classList.toggle('is-active', k === i));
+      cells.forEach((c, k) => c.classList.toggle('is-active', k === i));
     }
 
-    // Desktop: map the pinned travel onto 0..count-1.
-    function travel() {
-      return Math.max(1, root.offsetHeight - pin.offsetHeight);
+    const travel = () => Math.max(1, root.offsetHeight - pin.offsetHeight);
+    const stickyTop = () => parseFloat(getComputedStyle(pin).top) || 0;
+    const progress = () =>
+      Math.min(Math.max((stickyTop() - root.getBoundingClientRect().top) / travel(), 0), 1);
+
+    // Paint the ring at `rot`: tilt, per-panel blur/dim by angle from the front, active card.
+    function paint() {
+      const p = progress();
+      ring.style.setProperty('--rot', `${rot.toFixed(2)}deg`);
+      ring.style.setProperty('--tilt', `${(2.5 - 5 * p).toFixed(2)}deg`);
+      let best = 0;
+      let bestDist = Infinity;
+      cells.forEach((_, k) => {
+        let a = (((k * STEP + rot) % 360) + 540) % 360 - 180; // −180…180, 0 = facing the viewer
+        const dist = Math.abs(a);
+        if (dist < bestDist) { bestDist = dist; best = k; }
+        const f = Math.min(Math.max(dist - SHARP, 0) / (60 - SHARP), 1);
+        dialogs[k]!.style.setProperty('--blur', `${(f * 10).toFixed(2)}px`);
+        dialogs[k]!.style.setProperty('--dim', (1 - 0.35 * f).toFixed(3));
+      });
+      setActive(best);
     }
-    function stickyTop() {
-      return parseFloat(getComputedStyle(pin).top) || 0;
-    }
-    function fromScroll() {
-      ticking = false;
+
+    // Ease the rendered angle towards the scroll's angle (a light scrub, like ScrollSmoother).
+    // Time-based, so it catches up at the same pace at any frame rate.
+    let last = 0;
+    function frame(now: number) {
+      raf = 0;
       if (!desktop.matches) return;
-      const progress = (stickyTop() - root.getBoundingClientRect().top) / travel();
-      const p = Math.min(Math.max(progress, 0), 0.9999);
-      setActive(Math.floor(p * count));
+      target = angleFor(progress());
+      const dt = last ? Math.min(now - last, 250) : 16;
+      last = now;
+      const delta = target - rot;
+      const k = 1 - Math.exp(-dt / 110); // ~110 ms time constant
+      rot = reduce.matches || Math.abs(delta) < 0.05 ? target : rot + delta * k;
+      paint();
+      if (inView && rot !== target) raf = requestAnimationFrame(frame);
+      else last = 0;
     }
+    const kick = () => { if (!raf && desktop.matches) raf = requestAnimationFrame(frame); };
 
     // Below desktop: the centred dialog in the swipe carousel wins.
     function fromSwipe() {
@@ -299,8 +357,8 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
       const mid = viewport.getBoundingClientRect().left + viewport.clientWidth / 2;
       let best = 0;
       let bestDist = Infinity;
-      dialogs.forEach((dl, k) => {
-        const r = dl.getBoundingClientRect();
+      cells.forEach((c, k) => {
+        const r = c.getBoundingClientRect();
         const dist = Math.abs(r.left + r.width / 2 - mid);
         if (dist < bestDist) { bestDist = dist; best = k; }
       });
@@ -311,35 +369,36 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
       card.addEventListener('click', () => {
         if (desktop.matches) {
           const top = window.scrollY + root.getBoundingClientRect().top - stickyTop();
-          window.scrollTo({ top: top + travel() * ((i + 0.5) / count), behavior: 'smooth' });
+          window.scrollTo({ top: top + travel() * progressFor(i), behavior: 'smooth' });
         } else {
-          const dl = dialogs[i]!;
-          viewport.scrollTo({
-            left: dl.offsetLeft - (viewport.clientWidth - dl.offsetWidth) / 2,
-            behavior: 'smooth',
-          });
+          const c = cells[i]!;
+          viewport.scrollTo({ left: c.offsetLeft - (viewport.clientWidth - c.offsetWidth) / 2, behavior: 'smooth' });
+          setActive(i);
         }
-        setActive(i);
       });
     });
 
-    window.addEventListener(
-      'scroll',
-      () => {
-        if (!ticking) {
-          ticking = true;
-          requestAnimationFrame(fromScroll);
-        }
-      },
-      { passive: true },
-    );
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([e]) => {
+        inView = !!e?.isIntersecting;
+        if (inView) kick();
+      }, { rootMargin: '20% 0px' }).observe(root);
+    } else {
+      inView = true;
+    }
+
+    window.addEventListener('scroll', kick, { passive: true });
+    window.addEventListener('resize', kick, { passive: true });
     viewport.addEventListener('scroll', () => requestAnimationFrame(fromSwipe), { passive: true });
     viewport.addEventListener('scrollend', fromSwipe);
     desktop.addEventListener('change', () => {
-      track.style.setProperty('--i', String(active));
-      desktop.matches ? fromScroll() : fromSwipe();
+      if (desktop.matches) { rot = target = angleFor(progress()); paint(); }
+      else {
+        dialogs.forEach((dl) => { dl.style.removeProperty('--blur'); dl.style.removeProperty('--dim'); });
+        fromSwipe();
+      }
     });
-    window.addEventListener('resize', () => requestAnimationFrame(fromScroll), { passive: true });
-    fromScroll();
+
+    if (desktop.matches) { rot = target = angleFor(progress()); paint(); }
   }
 </script>

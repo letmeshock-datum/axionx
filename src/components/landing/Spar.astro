@@ -126,8 +126,9 @@ const kinds: SparKind[] = ['sense', 'plan', 'act', 'reflect'];
   }
 
   .step__body {
-    font-size: 1.25rem; /* size/body/sm 20 / 24 */
-    line-height: 1.5rem;
+    font-size: 1.1429rem; /* 16px / 20px on screen at 1440 (1rem = 14px there) */
+    line-height: 1.4286rem;
+    padding-inline-end: 2.5rem; /* small right inset so lines wrap short of the edge */
     color: var(--c-muted);
     text-wrap: pretty;
   }
@@ -156,7 +157,7 @@ const kinds: SparKind[] = ['sense', 'plan', 'act', 'reflect'];
     .spar__steps { grid-template-columns: minmax(0, 1fr); }
     .step { min-height: 0; padding: 1.25rem; }
     .step__fig { width: min(100%, 20rem); margin-inline: auto; }
-    .step__body { font-size: 1.0625rem; line-height: 1.45; }
+    .step__body { font-size: 1rem; line-height: 1.25rem; padding-inline-end: 3rem; } /* 16 / 20 at the phone base */
   }
 </style>
 
