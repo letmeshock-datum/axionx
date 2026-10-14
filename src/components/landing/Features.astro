@@ -198,22 +198,6 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     will-change: transform, opacity;
   }
 
-  /* Defocus layer: a backdrop blur over the card's own content. Unlike filter: blur(), it
-     doesn't fade where the panel clips the card, so no seam at the panel's left/right edges.
-     The card's own glass makes it the backdrop root, so this only blurs the card. */
-  .dialog::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    border-radius: inherit;
-    pointer-events: none;
-    -webkit-backdrop-filter: blur(24px); /* reads like the Figma 10px layer blur */
-    backdrop-filter: blur(24px);
-    opacity: 0;
-    transition: opacity 0.6s var(--ease);
-  }
-
   /* Front: sharp glass with the Figma backdrop blur. */
   .dialog[data-pos='0'] {
     z-index: 3;
@@ -227,8 +211,7 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
   /* Neighbours stand at the panel's clipped edges, where a backdrop blur runs out of backdrop
      and lets the sharp panel show through as a seam. The panel is a plain vertical gradient, so
      the blurred glass equals that gradient under 40% black: paint it directly instead (stops
-     mapped from the panel onto the card). filter: brightness(1) is a no-op that makes the card
-     the backdrop root for its defocus layer. */
+     mapped from the panel onto the card). */
   .dialog[data-pos='-1'],
   .dialog[data-pos='1'] {
     z-index: 2;
@@ -236,13 +219,10 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     background:
       linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
       linear-gradient(180deg, rgb(177, 100, 60) -2.66%, rgb(177, 98, 57) 13.54%, rgb(163, 87, 50) 20.14%, rgb(106, 49, 29) 38.74%, rgb(7, 6, 4) 62.73%, rgb(16, 16, 15) 65.73%, rgb(110, 108, 105) 84.32%);
-    filter: brightness(1);
+    filter: blur(10px); /* Figma layer blur: the whole tile, edges included */
   }
 
-  .dialog[data-pos='-1']::after,
-  .dialog[data-pos='1']::after {
-    opacity: 1;
-  }
+
 
   .dialog__img,
   .dialog::before {
@@ -346,7 +326,6 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     }
     .dialog.is-active,
     .dialog.is-active[data-pos] { opacity: 1; }
-    .dialog[data-pos]::after { opacity: 0; }
     .dialog__img { height: 44.6rem; }
   }
 
