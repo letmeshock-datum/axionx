@@ -8,12 +8,14 @@ interface Props {
 }
 const d = t(Astro.props.locale);
 const kinds: SparKind[] = ['sense', 'plan', 'act', 'reflect'];
+// One sentence per line on desktop.
+const introLines = d.spar.intro.split(/(?<=\.)\s+(?=\S)/);
 ---
 
 <section class="spar wrap" id="spar" aria-labelledby="spar-title">
   <div class="spar__head">
     <h2 class="spar__title display" id="spar-title">{d.spar.title}</h2>
-    <p class="spar__intro">{d.spar.intro}</p>
+    <p class="spar__intro">{introLines.map((line) => <span class="spar__intro-line">{line} </span>)}</p>
   </div>
   <ol class="spar__steps">
     {
@@ -56,11 +58,16 @@ const kinds: SparKind[] = ['sense', 'plan', 'act', 'reflect'];
   }
 
   .spar__intro {
-    max-width: 47.1875rem; /* 755px */
+    max-width: 47.1875rem; /* 755px; desktop sets one sentence per line instead */
     font-size: 1.5rem;
     line-height: 1.4;
     color: var(--c-muted);
     text-wrap: pretty;
+  }
+
+  @media (min-width: 1024px) {
+    .spar__intro { max-width: none; }
+    .spar__intro-line { display: block; }
   }
 
   /* 1338:3142 — four 320px tiles, gap 8, text pinned to the bottom. */
