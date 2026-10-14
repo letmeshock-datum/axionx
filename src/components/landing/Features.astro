@@ -195,7 +195,7 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     transform: rotateY(var(--a)) translateZ(var(--r)) rotateY(var(--turn, 0deg));
   }
 
-  /* Opaque card (a tinted take on the panel gradient) so cards behind never show through. */
+  /* Glass card, as in Figma: translucent black over a strong backdrop blur. */
   .dialog,
   .slab {
     position: absolute;
@@ -207,16 +207,19 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
 
   .dialog {
     border: 1px solid #e88652;
-    background: linear-gradient(180deg, #6a3a21 0%, #5c3019 28%, #3a1d0f 56%, #120a06 88%, #0f0e0d 100%);
+    background: rgba(0, 0, 0, 0.4);
+    -webkit-backdrop-filter: blur(6.25rem);
+    backdrop-filter: blur(6.25rem); /* 100px */
     box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.25);
     overflow: hidden;
     backface-visibility: hidden;
   }
 
-  /* 4px extrusion: stacked 1px layers behind the face read as a solid edge when the card turns. */
+  /* 4px extrusion: stacked 1px outlines behind the face read as a solid edge when the card turns,
+     without filling the glass from inside. */
   .slab {
     transform: translateZ(var(--z));
-    background: #7a3f20;
+    background: transparent;
     border: 1px solid #b8653a;
   }
 
