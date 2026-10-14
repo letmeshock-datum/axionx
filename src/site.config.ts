@@ -9,6 +9,4 @@ export const SITE = {
   /** Address copied by the "Request a briefing" button (and used as its mailto fallback). */
   email: 'hello@axionx.sa',
   themeColor: '#080808',
-  /** Autoplay interval of the feature slider, ms. */
-  sliderInterval: 7000,
 } as const;

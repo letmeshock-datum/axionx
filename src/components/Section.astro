@@ -1,5 +1,5 @@
 ---
-import FeatureSlider from './FeatureSlider.astro';
+import FeatureList from './FeatureList.astro';
 import type { Section } from '../i18n/ui';
 
 interface Props {
@@ -19,7 +19,7 @@ const titleId = `${s.id}-title`;
     <p class="section__intro t-trim">{s.intro}</p>
   </div>
   <div class="section__list">
-    <FeatureSlider items={s.items} idPrefix={s.id} label={s.title} />
+    <FeatureList items={s.items} label={s.title} />
   </div>
   <p class="section__subline">{s.subline}</p>
 </section>
@@ -45,8 +45,8 @@ const titleId = `${s.id}-title`;
     justify-self: end;
     width: 100%;
     max-width: 31.25rem;
-    /* Line the first item's rule up with the title's cap height. */
-    padding-top: 2.4rem;
+    /* First rule sits level with the title: eyebrow chip 1.75rem + gap 1.5rem. */
+    padding-top: 3.25rem;
   }
 
   .section__subline {
