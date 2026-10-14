@@ -91,7 +91,7 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
   .fx__cards {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 0.5rem; /* 8px between cards (Figma: 367 × 520 hug) */
     flex: none;
     width: 22.9375rem; /* 367px */
   }
@@ -127,6 +127,7 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
   .card__body {
     font-size: 1rem;
     line-height: 1.4;
+    letter-spacing: -0.015em; /* Geist runs wider than Diatype; keeps the design's two lines */
     color: var(--c-muted);
     text-wrap: pretty;
   }
