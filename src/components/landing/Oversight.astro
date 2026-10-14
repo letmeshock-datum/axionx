@@ -1,0 +1,353 @@
+---
+import arrowPolicy from '../../assets/landing/arrow-policy.svg';
+import arrowAutonomous from '../../assets/landing/arrow-autonomous.svg';
+import arrowPerson from '../../assets/landing/arrow-person.svg';
+import arrowRecordAuto from '../../assets/landing/arrow-record-auto.svg';
+import arrowRecordPerson from '../../assets/landing/arrow-record-person.svg';
+import { t, type Locale } from '../../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+const d = t(Astro.props.locale);
+const g = d.oversight.diagram;
+const arrows = [
+  { svg: arrowPolicy, cls: 'arrow--policy' },
+  { svg: arrowAutonomous, cls: 'arrow--autonomous' },
+  { svg: arrowPerson, cls: 'arrow--person' },
+  { svg: arrowRecordAuto, cls: 'arrow--record-auto' },
+  { svg: arrowRecordPerson, cls: 'arrow--record-person' },
+];
+---
+
+<section class="ov wrap" id="oversight" aria-labelledby="oversight-title">
+  <div class="ov__head">
+    <h2 class="ov__title display" id="oversight-title">
+      <span>{d.oversight.title1}</span>
+      <span>{d.oversight.title2}</span>
+    </h2>
+    <p class="ov__intro">{d.oversight.intro}</p>
+  </div>
+
+  <!-- Diagram plaque 1338:3066. Geometry is fixed left-to-right in every locale. -->
+  <figure class="plaque" aria-label={g.label}>
+    <div class="diagram" dir="ltr">
+      <div class="node node--agent">
+        <p dir="auto" class="node__label">{g.agent.label}</p>
+        <p dir="auto" class="node__text">{g.agent.text}</p>
+      </div>
+      <div class="node node--policy">
+        <p dir="auto" class="node__label">{g.policy.label}</p>
+        <p dir="auto" class="node__text">{g.policy.text}</p>
+      </div>
+      <div class="node node--autonomous">
+        <p dir="auto" class="node__label">{g.autonomous.label}</p>
+        <p dir="auto" class="node__text">{g.autonomous.text}</p>
+      </div>
+      <div class="node node--person">
+        <p dir="auto" class="node__label node__label--brand">{g.person.label}</p>
+        <p dir="auto" class="node__text">{g.person.text}</p>
+        <div class="decisions" aria-hidden="true">
+          <span class="decision decision--accept">{g.person.accept}</span>
+          <span class="decision">{g.person.edit}</span>
+          <span class="decision">{g.person.reject}</span>
+        </div>
+      </div>
+      <div class="node node--record">
+        <p dir="auto" class="node__label">{g.record.label}</p>
+        <p dir="auto" class="node__text">{g.record.text}</p>
+      </div>
+
+      {
+        arrows.map((a) => (
+          <img src={a.svg.src} width={a.svg.width} height={a.svg.height} alt="" class:list={['arrow', a.cls]} />
+        ))
+      }
+      <p dir="auto" class="edge edge--within">{g.withinPolicy}</p>
+      <p dir="auto" class="edge edge--signoff">{g.needsSignOff}</p>
+      <figcaption dir="auto" class="caption">{g.caption}</figcaption>
+    </div>
+  </figure>
+
+  <ol class="ov__list">
+    {
+      d.oversight.items.map((item, i) => (
+        <li class="row">
+          <h3 class="row__name">
+            <span class="row__num">{String(i + 1).padStart(2, '0')}</span>
+            <span class="row__title">{item.title}</span>
+          </h3>
+          <p class="row__body">{item.body}</p>
+        </li>
+      ))
+    }
+  </ol>
+
+  <p class="ov__subline display">
+    <span>{d.oversight.subline1}</span>
+    <span>{d.oversight.subline2}</span>
+  </p>
+</section>
+
+<style>
+  /* Figma Human-in-the-loop 1338:3061 — py 120, gap 40. */
+  .ov {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    padding-block: 7.5rem;
+  }
+
+  .ov__head {
+    display: flex;
+    align-items: flex-end;
+    gap: 5rem;
+  }
+
+  .ov__title {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 4rem;
+    line-height: 1;
+    color: var(--c-white);
+  }
+
+  .ov__title > span { display: block; }
+
+  .ov__intro {
+    flex: none;
+    width: 32.5rem; /* 520px */
+    font-size: 1.5rem;
+    line-height: 1.3;
+    color: var(--c-muted);
+    text-wrap: pretty;
+  }
+
+  /* ---------------- Diagram ---------------- */
+  .plaque {
+    padding: 1.5rem;
+    border: 1px solid var(--c-border-subtle);
+    border-radius: 0.5rem;
+    background: var(--c-surface-subtle);
+    overflow: hidden;
+  }
+
+  /* 1230 × 392 canvas; every child placed with Figma coordinates (px / 16 = rem). */
+  .diagram {
+    position: relative;
+    height: 24.5rem;
+  }
+
+  .node {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 7rem; /* 112px */
+    padding: 1.5rem;
+    border: 1px solid var(--c-border);
+    border-radius: 0.25rem;
+    background: var(--c-surface-muted);
+  }
+
+  .node--agent { left: 0; top: 8.75rem; width: 13.75rem; }
+  .node--policy { left: 19.375rem; top: 8.75rem; width: 13.75rem; }
+  .node--autonomous { left: 38.75rem; top: 0; width: 17.5rem; }
+  .node--person {
+    left: 38.75rem;
+    top: 14.5rem; /* 112 + gap 120 */
+    width: 17.5rem;
+    height: 10rem;
+    border: 2px solid var(--c-accent-border);
+  }
+  .node--record { left: 61.875rem; top: 8.75rem; width: 15rem; }
+
+  .node__label,
+  .edge,
+  .decision {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.75rem; /* label/xs 12 / 20, tracking 1px */
+    line-height: 1.25rem;
+    letter-spacing: 0.0625rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .node__label { color: var(--c-label); }
+
+  /* Arabic has no mono cut: labels switch to the text face. */
+  :global([dir='rtl']) .node__label,
+  :global([dir='rtl']) .edge,
+  :global([dir='rtl']) .decision {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    letter-spacing: 0;
+  }
+  .node__label--brand { color: var(--c-accent); }
+
+  /* body/sm 20 / 24 in Diatype Plus; Geist is wider, so it's set a touch tighter to keep the design's line breaks. */
+  .node__text {
+    font-size: 1.1875rem;
+    line-height: 1.5rem;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    color: var(--c-white);
+  }
+
+  .decisions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .decision {
+    flex: 1 1 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--c-accent-border);
+    border-radius: 0.25rem;
+    color: var(--c-accent);
+  }
+
+  .decision--accept {
+    border-color: var(--c-accent);
+    background: var(--c-accent);
+    color: #000;
+  }
+
+  /* Arrow SVGs keep their own width/height; the box is positioned by its Figma frame. */
+  .arrow { position: absolute; max-width: none; }
+  .arrow--policy { left: 13.75rem; top: 11.79rem; width: 5.6875rem; height: auto; }
+  .arrow--autonomous { left: 26.2188rem; top: 3.0398rem; width: 12.625rem; height: auto; }
+  .arrow--person { left: 26.2813rem; top: 15.75rem; width: 12.5625rem; height: auto; }
+  .arrow--record-auto { left: 56.25rem; top: 3.4375rem; width: 13.5853rem; height: auto; }
+  .arrow--record-person { left: 56.25rem; top: 15.6875rem; width: 13.5853rem; height: auto; }
+
+  .edge {
+    position: absolute;
+    left: 26.25rem;
+    color: var(--c-muted);
+  }
+
+  .edge--within { top: 2rem; }
+  .edge--signoff { top: 20.5625rem; }
+
+  .caption {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 21.1875rem; /* 339px */
+    font-size: 1.25rem;
+    line-height: 1.5rem;
+    color: var(--c-muted);
+  }
+
+  /* ---------------- List ---------------- */
+  /* Rows carry the design's black 15% hairlines (invisible on black, kept as drawn). */
+  .row {
+    display: flex;
+    align-items: flex-start;
+    gap: 5rem;
+    padding-block: 2.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
+  }
+
+  .row:last-child { border-bottom: 1px solid rgba(0, 0, 0, 0.15); }
+
+  .row__name {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    gap: 2rem;
+    font-size: 2rem; /* Diatype Medium 32 */
+    font-weight: 500;
+    line-height: 1.25;
+  }
+
+  .row__num { color: var(--c-gold); font-variant-numeric: tabular-nums; }
+  .row__title { color: var(--c-white); }
+
+  .row__body {
+    flex: none;
+    width: 32.5rem;
+    font-size: 1.5rem;
+    line-height: 1.4;
+    color: var(--c-muted);
+    text-wrap: pretty;
+  }
+
+  /* ---------------- Subline ---------------- */
+  .ov__subline {
+    padding-inline: 3rem;
+    border-radius: 1rem;
+    background: #000;
+    font-size: 4rem;
+    line-height: 1;
+    text-align: center;
+    color: var(--c-white);
+  }
+
+  .ov__subline > span { display: block; }
+
+  /* Below desktop the canvas can't hold its geometry: re-flow as a vertical flow. */
+  @media (max-width: 1023px) {
+    .ov { padding-block: 5rem; gap: 2rem; }
+    .ov__head { flex-direction: column; align-items: stretch; gap: 1.5rem; }
+    .ov__title, .ov__subline { font-size: 3rem; }
+    .ov__intro { width: auto; font-size: 1.25rem; }
+
+    .plaque { padding: 1rem; }
+    .diagram {
+      height: auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 0.75rem;
+    }
+    .node {
+      position: static;
+      width: auto !important;
+      height: auto !important;
+      min-height: 6.5rem;
+      padding: 1.25rem;
+    }
+    .node--agent, .node--policy, .node--record { grid-column: span 2; }
+    .node--agent { order: 1; }
+    .node--policy { order: 2; }
+    .node--autonomous { order: 4; }
+    .node--person { order: 6; }
+    .node--record { order: 7; }
+    .edge { position: static; order: 3; color: var(--c-label); }
+    .edge--within { order: 3; }
+    .edge--signoff { order: 5; }
+    .node--autonomous { grid-column: 1; grid-row: 4; }
+    .node--person { grid-column: 2; grid-row: 4; }
+    .edge--within { grid-column: 1; grid-row: 3; }
+    .edge--signoff { grid-column: 2; grid-row: 3; }
+    .node--record { grid-row: 5; }
+    .arrow { display: none; }
+    .caption { position: static; width: auto; grid-column: span 2; order: 8; grid-row: 6; font-size: 1.0625rem; }
+
+    .row { flex-direction: column; gap: 0.75rem; padding-block: 1.75rem; }
+    .row__name { font-size: 1.5rem; gap: 1.25rem; }
+    .row__body { width: auto; font-size: 1.125rem; padding-inline-start: 3.25rem; }
+  }
+
+  @media (max-width: 767px) {
+    .ov { padding-block: 4rem; }
+    .ov__title, .ov__subline { font-size: 2rem; line-height: 1.05; }
+    .ov__subline { padding-inline: 0; }
+    .diagram { grid-template-columns: minmax(0, 1fr); }
+    .node--agent, .node--policy, .node--record, .caption { grid-column: 1; }
+    .edge--within { grid-column: 1; grid-row: 3; }
+    .node--autonomous { grid-column: 1; grid-row: 4; }
+    .edge--signoff { grid-column: 1; grid-row: 5; }
+    .node--person { grid-column: 1; grid-row: 6; }
+    .node--record { grid-row: 7; }
+    .caption { grid-row: 8; }
+    .row__body { padding-inline-start: 0; }
+    .row__name { font-size: 1.375rem; }
+  }
+</style>

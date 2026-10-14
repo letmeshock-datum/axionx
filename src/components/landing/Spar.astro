@@ -1,0 +1,117 @@
+---
+import { t, type Locale } from '../../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+const d = t(Astro.props.locale);
+---
+
+<section class="spar wrap" id="spar" aria-labelledby="spar-title">
+  <div class="spar__head">
+    <h2 class="spar__title display" id="spar-title">{d.spar.title}</h2>
+    <p class="spar__intro">{d.spar.intro}</p>
+  </div>
+  <ol class="spar__steps">
+    {
+      d.spar.steps.map((s) => (
+        <li class="step">
+          <h3 class="step__title">{s.title}</h3>
+          <p class="step__body">{s.body}</p>
+        </li>
+      ))
+    }
+  </ol>
+  <p class="spar__statement display">
+    <span class="spar__accent">{d.spar.accent}</span>{d.spar.rest}
+  </p>
+</section>
+
+<style>
+  /* Figma SPAR 1338:3025 — py 120, gap 40. */
+  .spar {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    padding-block: 7.5rem;
+  }
+
+  .spar__head {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .spar__title {
+    max-width: 51.25rem; /* 820px */
+    font-size: 4rem;
+    line-height: 1;
+    color: var(--c-white);
+  }
+
+  .spar__intro {
+    max-width: 47.1875rem; /* 755px */
+    font-size: 1.5rem;
+    line-height: 1.4;
+    color: var(--c-muted);
+    text-wrap: pretty;
+  }
+
+  /* 1338:3142 — four 320px tiles, gap 8, text pinned to the bottom. */
+  .spar__steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .step {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 0.625rem;
+    min-height: 20rem;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    background: var(--c-surface-subtle);
+  }
+
+  .step__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--c-white);
+  }
+
+  .step__body {
+    font-size: 1.25rem; /* size/body/sm 20 / 24 */
+    line-height: 1.5rem;
+    color: var(--c-muted);
+    text-wrap: pretty;
+  }
+
+  .spar__statement {
+    font-size: 4rem;
+    line-height: 1;
+    color: var(--c-white);
+  }
+
+  .spar__accent { color: var(--c-gold); }
+
+  @media (max-width: 1023px) {
+    .spar { padding-block: 5rem; gap: 2rem; }
+    .spar__head { gap: 1.5rem; }
+    .spar__title, .spar__statement { font-size: 3rem; }
+    .spar__intro { font-size: 1.25rem; }
+    .spar__steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .step { min-height: 13rem; }
+  }
+
+  @media (max-width: 767px) {
+    .spar { padding-block: 4rem; }
+    .spar__title, .spar__statement { font-size: 2rem; line-height: 1.05; }
+    .spar__intro { font-size: 1.125rem; }
+    .spar__steps { grid-template-columns: minmax(0, 1fr); }
+    .step { min-height: 0; padding: 1.25rem; }
+    .step__body { font-size: 1.0625rem; line-height: 1.45; }
+  }
+</style>

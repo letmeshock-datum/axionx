@@ -1,0 +1,44 @@
+---
+import { t, type Locale } from '../../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+const d = t(Astro.props.locale);
+---
+
+<section class="why wrap">
+  <h2 class="why__title display">
+    <span class="why__accent">{d.why.accent}</span>
+    <span>{d.why.line2}</span>
+    <span>{d.why.line3}</span>
+  </h2>
+</section>
+
+<style>
+  /* Figma Features 1338:2995 — pt 80, pb 40, 64px display. */
+  .why { padding-block: 5rem 2.5rem; }
+
+  .why__title {
+    font-size: 4rem;
+    line-height: 1;
+    color: var(--c-text);
+  }
+
+  .why__title > span { display: block; }
+  .why__accent { color: var(--c-gold); }
+
+  @media (min-width: 1024px) {
+    .why__title > span { white-space: nowrap; }
+  }
+
+  @media (max-width: 1023px) {
+    .why { padding-block: 4rem 2rem; }
+    .why__title { font-size: 3rem; }
+  }
+
+  @media (max-width: 767px) {
+    .why { padding-block: 3.5rem 1.75rem; }
+    .why__title { font-size: 2rem; line-height: 1.05; }
+  }
+</style>

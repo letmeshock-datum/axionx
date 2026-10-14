@@ -1,0 +1,78 @@
+---
+import logo from '../../assets/landing/logo-footer.svg';
+import { SITE } from '../../site.config';
+import { t, type Locale } from '../../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+const d = t(Astro.props.locale);
+---
+
+<footer class="cta">
+  <div class="cta__top wrap">
+    <h2 class="cta__title display">
+      <span>{d.cta.line1}</span>
+      <span>{d.cta.line2}</span>
+    </h2>
+    <a class="btn cta__btn" href={`mailto:${SITE.email}`}>{d.cta.button}</a>
+  </div>
+  <!-- Frame 43 1338:3129: 203px strip, the 230px wordmark is cropped at the bottom. -->
+  <div class="cta__mark" aria-hidden="true">
+    <img src={logo.src} width={logo.width} height={logo.height} alt="" class="cta__logo" />
+  </div>
+</footer>
+
+<style>
+  /* Figma Footer 1338:3124 — pt 240, pb 48. */
+  .cta__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-block: 15rem 3rem;
+  }
+
+  .cta__title {
+    font-size: 6rem; /* 96px */
+    line-height: 0.9;
+    color: var(--c-white);
+    white-space: nowrap;
+  }
+
+  .cta__title > span { display: block; }
+
+  .cta__btn {
+    flex: none;
+    padding: 1.25rem 2rem; /* 20 / 32 */
+    background: var(--c-accent);
+    color: #000;
+    font-size: 1.25rem;
+  }
+
+  .cta__btn:hover { background: #d4f21a; }
+
+  .cta__mark {
+    height: 12.6875rem; /* 203px */
+    overflow: hidden;
+  }
+
+  .cta__logo {
+    width: 88.615rem; /* 1417.84 × 230 */
+    max-width: none;
+    height: auto;
+  }
+
+  @media (max-width: 1023px) {
+    .cta__top { flex-direction: column; padding-block: 8rem 2.5rem; }
+    .cta__title { font-size: 4rem; white-space: normal; }
+    .cta__mark { height: calc(100vw * 203 / 1440); }
+    .cta__logo { width: calc(100vw * 1417.84 / 1440); }
+  }
+
+  @media (max-width: 767px) {
+    .cta__top { padding-block: 5rem 2rem; gap: 1.5rem; }
+    .cta__title { font-size: 2.5rem; line-height: 0.95; }
+    .cta__btn { padding: 1rem 1.5rem; font-size: 1.0625rem; }
+  }
+</style>

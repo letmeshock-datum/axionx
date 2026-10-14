@@ -1,0 +1,107 @@
+---
+import { Image } from 'astro:assets';
+import backdrop from '../../assets/landing/media-backdrop.jpg';
+import pattern from '../../assets/landing/pattern-overlay.png';
+import dashboard from '../../assets/landing/dashboard-ui.png';
+import { t, type Locale } from '../../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+const d = t(Astro.props.locale);
+---
+
+<section class="showcase wrap" id="product">
+  <div class="showcase__frame">
+    <Image src={backdrop} alt="" widths={[800, 1280, 2000, 2560]} sizes="(min-width: 1024px) 88.9vw, 100vw" class="showcase__backdrop" loading="eager" />
+    <div class="showcase__blur" aria-hidden="true"></div>
+    <Image src={pattern} alt="" widths={[1440, 2560]} sizes="100vw" class="showcase__pattern" loading="eager" />
+    <div class="showcase__glass">
+      <Image
+        src={dashboard}
+        alt={d.showcase.alt}
+        widths={[640, 960, 1280, 1920]}
+        sizes="(min-width: 1024px) 61vw, 92vw"
+        class="showcase__shot"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Figma 1338:2989 / Frame 56 1338:2990 — 1280 × 693, radius 8, padding 88/200. */
+  .showcase__frame {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 1280 / 693;
+    padding: 5.5rem 12.5rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .showcase__backdrop,
+  .showcase__blur {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .showcase__backdrop { object-fit: cover; z-index: -3; }
+
+  /* 1338:2991: 200px backdrop blur over the photo. */
+  .showcase__blur {
+    z-index: -2;
+    background: rgba(217, 217, 217, 0.01);
+    -webkit-backdrop-filter: blur(12.5rem);
+    backdrop-filter: blur(12.5rem);
+  }
+
+  /* 1338:2992: 1440 × 810 code-glyph texture, overlay blend, centred. */
+  .showcase__pattern {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 112.5%;
+    height: auto;
+    aspect-ratio: 1440 / 810;
+    translate: -50% -50%;
+    object-fit: cover;
+    mix-blend-mode: overlay;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* 1338:2993: 880px glass panel, padding/radius 24.76. */
+  .showcase__glass {
+    width: 55rem;
+    max-width: 100%;
+    padding: 1.5475rem;
+    border-radius: 1.5475rem;
+    background: rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(1.29rem);
+    backdrop-filter: blur(1.29rem);
+  }
+
+  .showcase__shot {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1920 / 1080;
+    object-fit: cover;
+  }
+
+  @media (max-width: 1023px) {
+    .showcase__frame { aspect-ratio: auto; padding: 3rem 2rem; }
+    .showcase__glass { width: 100%; padding: 1rem; border-radius: 1rem; }
+  }
+
+  @media (max-width: 767px) {
+    .showcase__frame { padding: 1.5rem 0.75rem; }
+    .showcase__glass { padding: 0.5rem; border-radius: 0.75rem; }
+  }
+</style>

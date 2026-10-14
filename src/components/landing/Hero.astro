@@ -1,0 +1,63 @@
+---
+import { t, type Locale } from '../../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+const d = t(Astro.props.locale);
+---
+
+<section class="hero wrap">
+  <h1 class="hero__title display">
+    <span class="hero__line"><span class="hero__accent">{d.hero.accent}</span> {d.hero.line1}</span>
+    <span class="hero__line">{d.hero.line2}</span>
+  </h1>
+  <p class="hero__intro">
+    {d.hero.introLead} <span class="hero__dim">{d.hero.introRest}</span>
+  </p>
+</section>
+
+<style>
+  /* Figma Hero 1338:2981 — padding 80, gap 48. */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    padding-block: 5rem;
+  }
+
+  .hero__title {
+    font-size: 6.25rem; /* 100px */
+    line-height: 0.9;
+    color: var(--c-text);
+  }
+
+  .hero__line { display: block; }
+  .hero__accent { color: var(--c-accent); }
+
+  .hero__intro {
+    max-width: 55.25rem; /* 884px */
+    font-size: 2rem; /* 32px */
+    line-height: 1.3;
+    color: var(--c-text);
+    text-wrap: pretty;
+  }
+
+  .hero__dim { color: var(--c-dim); }
+
+  @media (min-width: 1024px) {
+    .hero__line { white-space: nowrap; }
+  }
+
+  @media (max-width: 1023px) {
+    .hero { gap: 2rem; padding-block: 3.5rem; }
+    .hero__title { font-size: 4.25rem; }
+    .hero__intro { font-size: 1.5rem; }
+  }
+
+  @media (max-width: 767px) {
+    .hero { gap: 1.5rem; padding-block: 2.5rem 3rem; }
+    .hero__title { font-size: 2.75rem; line-height: 0.95; }
+    .hero__intro { font-size: 1.25rem; line-height: 1.4; }
+  }
+</style>

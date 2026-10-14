@@ -4,7 +4,6 @@ import { getAbsoluteLocaleUrl } from 'astro:i18n';
 import '../styles/global.css';
 import { SITE } from '../site.config';
 import { locales, localeMeta, t, type Locale } from '../i18n/ui';
-import Background from '../components/Background.astro';
 
 interface Props {
   locale: Locale;
@@ -106,6 +105,7 @@ const jsonLd = {
     <meta name="twitter:image:alt" content={d.meta.ogAlt} />
 
     <Font cssVariable="--font-geist" preload />
+    <Font cssVariable="--font-archivo" preload />
     <Font cssVariable="--font-geist-mono" preload />
     {locale === 'ar' && <Font cssVariable="--font-arabic" preload />}
 
@@ -113,7 +113,6 @@ const jsonLd = {
   </head>
   <body>
     <a class="skip-link" href="#main">{d.a11y.skip}</a>
-    <Background />
     <div class="page">
       <slot />
     </div>

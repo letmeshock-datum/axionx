@@ -1,8 +1,9 @@
 ---
 import { getRelativeLocaleUrl } from 'astro:i18n';
-import Wordmark from '../assets/wordmark.svg';
+import logo from '../assets/landing/logo-nav.svg';
+import gen from '../assets/landing/gen.svg';
 import LanguageSwitcher from './LanguageSwitcher.astro';
-import BriefingButton from './BriefingButton.astro';
+import { SITE } from '../site.config';
 import { t, type Locale } from '../i18n/ui';
 
 interface Props {
@@ -12,48 +13,89 @@ const { locale } = Astro.props;
 const d = t(locale);
 ---
 
-<header class="header">
-  <a class="header__brand" href={getRelativeLocaleUrl(locale, '/')} aria-label={d.a11y.home}>
-    <Wordmark class="header__wordmark" aria-hidden="true" focusable="false" />
+<header class="nav wrap">
+  <a class="nav__brand" dir="ltr" href={getRelativeLocaleUrl(locale, '/')} aria-label={d.a11y.home}>
+    <img src={logo.src} width={logo.width} height={logo.height} alt="" class="nav__logo" />
+    <img src={gen.src} width={gen.width} height={gen.height} alt="" class="nav__gen" />
   </a>
-  <nav class="header__nav" aria-label="Primary">
+  <nav class="nav__links" aria-label={d.a11y.primary}>
+    <a class="nav__link" href="#product">{d.nav.product}</a>
+    <a class="nav__link" href="#spar">{d.nav.spar}</a>
+    <a class="nav__link" href="#oversight">{d.nav.oversight}</a>
     <LanguageSwitcher locale={locale} />
-    <BriefingButton locale={locale} />
+    <a class="btn nav__demo" href={`mailto:${SITE.email}`}>{d.nav.demo}</a>
   </nav>
 </header>
 
 <style>
-  .header {
+  /* Figma Nav 1338:2968 — 100px tall, 80px gutters. */
+  .nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1.5rem;
-    height: 3.125rem; /* 50px: pill 18 → 50 */
-    padding: 1.125rem var(--gutter) 0;
+    gap: 2rem;
+    padding-block: 1.5rem;
   }
 
-  .header__brand {
-    display: block;
-    line-height: 0;
-  }
-
-  .header__wordmark {
-    display: block;
-    width: 4.625rem; /* 74px */
-    height: auto;
-  }
-
-  .header__nav {
+  .nav__brand {
     display: flex;
     align-items: center;
-    gap: 3.75rem; /* 60px */
+    gap: 0.752rem; /* 12.03px */
+    text-decoration: none;
   }
 
+  .nav__logo { width: 9.27rem; height: auto; } /* 148.3 × 24.06 */
+  .nav__gen { width: 4.719rem; height: auto; } /* 75.5 × 23.87 */
+
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: 3rem; /* 48px */
+  }
+
+  .nav__link {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.875rem; /* 14px */
+    letter-spacing: 0.02em; /* 0.28px */
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--c-text);
+    transition: opacity 0.2s var(--ease);
+  }
+
+  .nav__link:hover { opacity: 0.65; }
+
+  :global([dir='rtl']) .nav__link {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    text-transform: none;
+  }
+
+  .nav__demo {
+    padding: 1rem 1.5rem; /* 16 / 24 */
+    background: var(--c-text);
+    color: #000;
+    font-size: 1rem;
+  }
+
+  .nav__demo:hover { background: var(--c-white); }
+
   @media (max-width: 1023px) {
-    .header__nav { gap: 2rem; }
+    .nav__link { display: none; }
+    .nav__links { gap: 1.5rem; }
   }
 
   @media (max-width: 767px) {
-    .header__nav { gap: 1.25rem; }
+    .nav { padding-block: 1rem; }
+    .nav__logo { width: 7.4rem; }
+    .nav__gen { width: 3.77rem; }
+    .nav__links { gap: 1rem; }
+    .nav__demo { padding: 0.75rem 1rem; font-size: 0.875rem; }
+  }
+
+  /* Phones: logo + language only; the same CTA closes the page. */
+  @media (max-width: 519px) {
+    .nav__demo { display: none; }
   }
 </style>

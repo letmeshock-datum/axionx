@@ -1,0 +1,169 @@
+---
+import { Image } from 'astro:assets';
+import pattern from '../../assets/landing/pattern-overlay.png';
+import dialogMain from '../../assets/landing/dialog-natural-language.png';
+import dialogPeek from '../../assets/landing/dialog-agent-remembers.png';
+import { t, type Locale } from '../../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+const d = t(Astro.props.locale);
+---
+
+<section class="features wrap">
+  <ul class="features__cards">
+    {
+      d.features.items.map((f, i) => (
+        <li class:list={['card', { 'card--active': i === 0 }]}>
+          <h3 class="card__title">{f.title}</h3>
+          <p class="card__body">{f.body}</p>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="features__panel">
+    <Image src={pattern} alt="" widths={[1440, 2560]} sizes="100vw" class="features__pattern" />
+    <figure class="dialog dialog--main">
+      <Image src={dialogMain} alt={d.features.dialogAlt[0]} widths={[372, 744]} sizes="23.25rem" class="dialog__img" />
+    </figure>
+    <figure class="dialog dialog--peek" aria-hidden="true">
+      <Image src={dialogPeek} alt="" widths={[372, 744]} sizes="23.25rem" class="dialog__img" />
+    </figure>
+  </div>
+</section>
+
+<style>
+  /* Figma Frame 44 1338:2997 — cards 367 | gap 69 | panel 844 × 668. */
+  .features {
+    display: flex;
+    align-items: center;
+    gap: 4.3125rem;
+  }
+
+  .features__cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    flex: none;
+    width: 22.9375rem; /* 367px */
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+  }
+
+  .card--active { background: var(--c-surface-muted); }
+
+  .card__title {
+    font-size: 1.25rem; /* 20px, Diatype Bold */
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em; /* Geist runs wider than Diatype; keeps titles on one line */
+    color: var(--c-white);
+  }
+
+  .card__body {
+    font-size: 1rem;
+    line-height: 1.4;
+    color: var(--c-muted);
+    text-wrap: pretty;
+  }
+
+  /* 1338:3019 — warm gradient panel, clips the dialogs. */
+  .features__panel {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    height: 41.75rem; /* 668px */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 1.5rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    isolation: isolate;
+    background: linear-gradient(
+      180deg,
+      rgb(177, 100, 60) 0%,
+      rgb(177, 98, 57) 21.879%,
+      rgb(163, 87, 50) 30.783%,
+      rgb(106, 49, 29) 55.901%,
+      rgb(7, 6, 4) 88.296%,
+      rgb(16, 16, 15) 92.349%,
+      rgb(110, 108, 105) 117.45%
+    );
+  }
+
+  .features__pattern {
+    position: absolute;
+    right: 0;
+    top: calc(50% + 0.75rem);
+    width: 90rem; /* 1440 × 810 */
+    max-width: none;
+    height: 50.625rem;
+    translate: 0 -50%;
+    object-fit: cover;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  :global([dir='rtl']) .features__pattern { right: auto; left: 0; }
+
+  .dialog {
+    flex: none;
+    width: 23.375rem; /* 372 + 1px border each side */
+    border: 1px solid #e88652;
+    border-radius: 1.5rem;
+    background: rgba(0, 0, 0, 0.4);
+    -webkit-backdrop-filter: blur(6.25rem);
+    backdrop-filter: blur(6.25rem);
+    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+  }
+
+  .dialog__img {
+    display: block;
+    width: 23.25rem;
+    height: 56.25rem; /* 900px — the panel crops the bottom */
+    object-fit: cover;
+    border-radius: 1.5rem;
+  }
+
+  /* 1338:3023 — second dialog, out of focus, bleeding off the right edge. */
+  .dialog--peek {
+    position: absolute;
+    top: 3.75rem;
+    right: -13.9375rem; /* -223px */
+    filter: blur(10px);
+  }
+
+  :global([dir='rtl']) .dialog--peek { right: auto; left: -13.9375rem; }
+
+  @media (max-width: 1023px) {
+    .features { flex-direction: column; align-items: stretch; gap: 2rem; }
+    .features__cards {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+    .features__panel { flex: none; height: 36rem; }
+    .dialog--peek { right: -16rem; }
+  }
+
+  @media (max-width: 767px) {
+    .features__cards { grid-template-columns: minmax(0, 1fr); gap: 0.25rem; }
+    .card { padding: 1.25rem; }
+    .features__panel { height: 30rem; }
+    .dialog { width: 18.5rem; }
+    .dialog__img { width: 18.375rem; height: 44.5rem; }
+    .dialog--peek { display: none; }
+  }
+</style>

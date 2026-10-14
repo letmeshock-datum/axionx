@@ -47,6 +47,25 @@ export default defineConfig({
       },
     },
     {
+      // Stand-in for ABC Diatype Expanded (the design font is a trial licence and can't ship).
+      provider: fontProviders.local(),
+      name: 'Archivo',
+      cssVariable: '--font-archivo',
+      fallbacks: ['Helvetica Neue', 'Arial', 'sans-serif'],
+      options: {
+        variants: [
+          {
+            src: ['@fontsource-variable/archivo/files/archivo-latin-standard-normal.woff2'],
+            weight: '100 900',
+            stretch: '62% 125%',
+            style: 'normal',
+            display: 'swap',
+            unicodeRange: /** @type {[string, ...string[]]} */ (LATIN),
+          },
+        ],
+      },
+    },
+    {
       provider: fontProviders.local(),
       name: 'Geist Mono',
       cssVariable: '--font-geist-mono',
@@ -72,13 +91,13 @@ export default defineConfig({
       fallbacks: [],
       options: {
         variants: [
-          {
-            src: ['@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-400-normal.woff2'],
-            weight: 400,
+          ...[400, 500, 700].map((weight) => ({
+            src: [`@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-${weight}-normal.woff2`],
+            weight,
             style: 'normal',
             display: 'swap',
             unicodeRange: /** @type {[string, ...string[]]} */ (ARABIC),
-          },
+          })),
         ],
       },
     },

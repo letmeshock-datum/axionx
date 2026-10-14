@@ -1,61 +1,32 @@
 ---
 import Base from '../layouts/Base.astro';
 import Header from './Header.astro';
-import Section from './Section.astro';
-import Dashboard from './Dashboard.astro';
-import Footer from './Footer.astro';
-import { t, type Locale } from '../i18n/ui';
+import Hero from './landing/Hero.astro';
+import Showcase from './landing/Showcase.astro';
+import Why from './landing/Why.astro';
+import Features from './landing/Features.astro';
+import Spar from './landing/Spar.astro';
+import Band from './landing/Band.astro';
+import Oversight from './landing/Oversight.astro';
+import Cta from './landing/Cta.astro';
+import type { Locale } from '../i18n/ui';
 
 interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
-const d = t(locale);
-
-// Product UI screenshot is hidden for now. Set to true to show it under the first section.
-const showDashboard = false;
 ---
 
 <Base locale={locale}>
   <Header locale={locale} />
-  <main id="main" class="main">
-    {
-      d.sections.map((section, i) => (
-        <>
-          <Section section={section} primary={i === 0} />
-          {i === 0 && showDashboard && (
-            <div class="media">
-              <Dashboard locale={locale} />
-            </div>
-          )}
-        </>
-      ))
-    }
+  <main id="main">
+    <Hero locale={locale} />
+    <Showcase locale={locale} />
+    <Why locale={locale} />
+    <Features locale={locale} />
+    <Spar locale={locale} />
+    <Band locale={locale} />
+    <Oversight locale={locale} />
   </main>
-  <Footer locale={locale} />
+  <Cta locale={locale} />
 </Base>
-
-<style>
-  .main {
-    display: flex;
-    flex-direction: column;
-    gap: 11.25rem; /* section rhythm */
-    padding: 8.75rem var(--gutter) 9rem; /* header 50 → hero 190 */
-  }
-
-  .media {
-    width: 100%;
-    max-width: 50.166rem;
-    margin-top: -5rem;
-  }
-
-  @media (max-width: 1023px) {
-    .main { gap: 7rem; padding-top: 4.5rem; padding-bottom: 6rem; }
-    .media { margin-top: -3rem; }
-  }
-
-  @media (max-width: 767px) {
-    .main { gap: 5.5rem; padding-top: 3.5rem; padding-bottom: 4.5rem; }
-    .media { margin-top: -2.5rem; }
-  }
-</style>
