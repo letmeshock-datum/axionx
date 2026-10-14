@@ -81,13 +81,13 @@ const kinds: SparKind[] = ['sense', 'plan', 'act', 'reflect'];
     background: var(--c-surface-subtle);
   }
 
-  /* Illustration: hidden until the tile is hovered or focused (or, on touch, centred on screen). */
+  /* Illustration: a faint trace until the tile is hovered or focused (or, on touch, centred on screen). */
   .step { position: relative; outline-offset: 0.25rem; }
 
   .step__fig {
     margin-bottom: auto;
     padding: 0.5rem 0.5rem 1rem;
-    opacity: 0;
+    opacity: 0.08; /* a faint trace at rest; full on hover/focus */
     transform: translateY(0.5rem) scale(0.97);
     transition:
       opacity 0.45s var(--ease),
