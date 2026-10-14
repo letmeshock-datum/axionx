@@ -21,7 +21,7 @@ interface Props {
   telemetry?: number; // share of rows that carry telemetry text instead of the ramp
   class?: string;
 }
-const { src, amount = 0.11, cell = 8, contour = 0.5, gamma = 2.2, ink = '#e8c26a', lift = 0.35, telemetry = 0.25, class: cls = '' } = Astro.props;
+const { src, amount = 0.055, cell = 8, contour = 0.5, gamma = 2.2, ink = '#e8c26a', lift = 0.35, telemetry = 0.25, class: cls = '' } = Astro.props;
 const sample = await getImage({ src, width: 720, format: 'webp' });
 ---
 
@@ -84,7 +84,7 @@ const sample = await getImage({ src, width: 720, format: 'webp' });
 
   function field(canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext('2d')!;
-    const amount = Number(canvas.dataset.amount) || 0.11;
+    const amount = Number(canvas.dataset.amount) || 0.055;
     const cellH = Number(canvas.dataset.cell) || 10;
     const contourMix = Number(canvas.dataset.contour ?? 0.5);
     const gamma = Number(canvas.dataset.gamma) || 2.2;
