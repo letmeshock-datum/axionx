@@ -46,7 +46,7 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
         <ol class="fx__track" data-fx-track>
           {
             dialogs.map((img, i) => (
-              <li class:list={['dialog', { 'is-active': i === 0 }]} data-fx-dialog={i}>
+              <li class:list={['dialog', { 'is-active': i === 0 }]} data-fx-dialog={i} style={`--slot: ${i * 40}deg`}>
                 <Image
                   src={img}
                   alt={d.features.dialogAlt[i]}
@@ -67,7 +67,6 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
 <style>
   /* Pin travel: one step ≈ 70% of the viewport per extra card. */
   .fx {
-    --step: 28.625rem; /* dialog pitch: 693 − 235 px in Figma */
     --panel-h: 41.75rem; /* 668px */
     position: relative;
     height: calc(var(--panel-h) + 3 * 70svh);
@@ -160,27 +159,36 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     z-index: -1;
   }
 
+  /* 3D carousel (after codepen.io/nopr/pen/DWrOBm): dialogs sit on a ring and the ring turns one
+     step per card. A gentle 40° step on a wide radius keeps the neighbours angled but broad enough
+     to read, peeking in from the panel's edges as in Figma. Pulled back by its radius so the
+     front card is true size. */
   .fx__viewport {
     position: absolute;
     inset: 0;
+    perspective: 64rem; /* ≈ 900px */
+    perspective-origin: 50% 35%;
   }
 
-  /* Track origin = the centred slot (x 235 of 844); cards sit one pitch apart. */
   .fx__track {
+    --r: 33.5rem; /* ring radius */
     position: absolute;
     top: 1.5rem;
     left: calc(50% - 11.7133rem);
-    display: flex;
-    gap: calc(var(--step) - 23.4266rem);
-    transform: translateX(calc(var(--i, 0) * var(--step) * -1));
-    transition: transform 0.7s var(--ease);
+    width: 23.4266rem;
+    height: 56.375rem;
+    transform-style: preserve-3d;
+    transform: translateZ(calc(var(--r) * -1)) rotateY(var(--rot, 0deg));
+    transition: transform 1s var(--ease);
     will-change: transform;
   }
 
   .dialog {
-    position: relative;
-    flex: none;
+    position: absolute;
+    inset: 0;
     width: 23.4266rem; /* 374.83px */
+    transform: rotateY(var(--slot)) translateZ(var(--r));
+    backface-visibility: hidden;
     border-radius: 1.5rem;
     background: rgba(0, 0, 0, 0.4);
     -webkit-backdrop-filter: blur(6.25rem);
@@ -235,6 +243,7 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     .fx__panel { flex: none; }
 
     .fx__viewport {
+      perspective: none;
       overflow-x: auto;
       overscroll-behavior-x: contain;
       scroll-snap-type: x mandatory;
@@ -244,13 +253,21 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
 
     .fx__track {
       position: static;
+      display: flex;
       width: max-content;
+      height: auto;
       padding: 1.5rem calc(50% - 9.25rem) 0;
       gap: 1rem;
       transform: none;
+      transform-style: flat;
       transition: none;
     }
     .dialog {
+      position: relative;
+      inset: auto;
+      flex: none;
+      transform: none;
+      backface-visibility: visible;
       width: 18.5rem;
       scroll-snap-align: center;
       filter: none;
@@ -287,7 +304,7 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     function setActive(i: number) {
       if (i === active) return;
       active = i;
-      track.style.setProperty('--i', String(i));
+      track.style.setProperty('--rot', `${-40 * i}deg`);
       cards.forEach((c, k) => {
         c.classList.toggle('is-active', k === i);
         c.setAttribute('aria-current', String(k === i));
@@ -353,7 +370,7 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     viewport.addEventListener('scroll', () => requestAnimationFrame(fromSwipe), { passive: true });
     viewport.addEventListener('scrollend', fromSwipe);
     desktop.addEventListener('change', () => {
-      track.style.setProperty('--i', String(active));
+      track.style.setProperty('--rot', `${-40 * active}deg`);
       desktop.matches ? fromScroll() : fromSwipe();
     });
     window.addEventListener('resize', () => requestAnimationFrame(fromScroll), { passive: true });
