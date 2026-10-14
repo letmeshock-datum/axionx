@@ -1,0 +1,130 @@
+---
+import { SITE } from '../site.config';
+import { t, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const d = t(locale);
+---
+
+<a
+  class="pill"
+  href={`mailto:${SITE.email}`}
+  data-copy-email={SITE.email}
+  data-copied-label={d.nav.copied}
+>
+  <span class="pill__stack" aria-hidden="true">
+    <span class="pill__label pill__label--idle">{d.nav.briefing}</span>
+    <span class="pill__label pill__label--hover">{d.nav.copyEmail}</span>
+    <span class="pill__label pill__label--done">{d.nav.copied}</span>
+  </span>
+  <span class="sr-only" data-pill-text>{d.nav.briefing}</span>
+  <span class="sr-only" data-pill-live aria-live="polite"></span>
+</a>
+
+<style>
+  .pill {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2rem; /* 32px */
+    padding: 0 0.9375rem; /* 15px */
+    border-radius: 999px;
+    background: var(--c-pill);
+    -webkit-backdrop-filter: blur(0.9375rem);
+    backdrop-filter: blur(0.9375rem);
+    color: var(--c-text);
+    font-size: 0.875rem;
+    line-height: 1.125rem;
+    letter-spacing: var(--tr);
+    white-space: nowrap;
+    text-decoration: none;
+    overflow: hidden;
+    transition: background-color 0.25s var(--ease);
+  }
+
+  .pill:hover,
+  .pill:focus-visible {
+    background: var(--c-pill-hover);
+  }
+
+  .pill:focus-visible {
+    outline-offset: 0.1875rem;
+  }
+
+  /* All three labels share one grid cell, so the pill never changes width. */
+  .pill__stack {
+    display: grid;
+    text-align: center;
+  }
+
+  .pill__label {
+    grid-area: 1 / 1;
+    transition:
+      transform var(--dur) var(--ease),
+      opacity var(--dur) var(--ease);
+  }
+
+  .pill__label--hover,
+  .pill__label--done {
+    opacity: 0;
+    transform: translateY(110%);
+  }
+
+  @media (hover: hover) {
+    .pill:not([data-state='copied']):is(:hover, :focus-visible) .pill__label--idle {
+      opacity: 0;
+      transform: translateY(-110%);
+    }
+    .pill:not([data-state='copied']):is(:hover, :focus-visible) .pill__label--hover {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .pill[data-state='copied'] .pill__label--idle,
+  .pill[data-state='copied'] .pill__label--hover {
+    opacity: 0;
+    transform: translateY(-110%);
+  }
+
+  .pill[data-state='copied'] .pill__label--done {
+    opacity: 1;
+    transform: none;
+    color: var(--c-accent);
+  }
+</style>
+
+<script>
+  /**
+   * Hover-capable devices: hover reveals "Copy email", click copies the address.
+   * Touch devices (no hover): the link simply opens the mail client.
+   */
+  const canHover = window.matchMedia('(hover: hover)').matches;
+  const pills = document.querySelectorAll<HTMLAnchorElement>('[data-copy-email]');
+
+  for (const pill of pills) {
+    const live = pill.querySelector<HTMLElement>('[data-pill-live]');
+    let timer = 0;
+
+    pill.addEventListener('click', async (event) => {
+      if (!canHover || !navigator.clipboard?.writeText) return;
+      event.preventDefault();
+      try {
+        await navigator.clipboard.writeText(pill.dataset.copyEmail ?? '');
+        pill.dataset.state = 'copied';
+        if (live) live.textContent = pill.dataset.copiedLabel ?? '';
+        window.clearTimeout(timer);
+        timer = window.setTimeout(() => {
+          delete pill.dataset.state;
+          if (live) live.textContent = '';
+        }, 1800);
+      } catch {
+        window.location.href = pill.href;
+      }
+    });
+  }
+</script>

@@ -1,0 +1,25 @@
+# build output
+dist/
+.astro/
+.vercel/
+
+# dependencies
+node_modules/
+
+# environment
+.env
+.env.*
+!.env.example
+
+# os / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# design source exports (kept out of git, see scripts/generate-assets.mjs)
+src/assets/figma-raw/
+
+# local tooling
+.claude/
