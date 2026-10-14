@@ -133,6 +133,9 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     border-radius: 0.5rem;
     overflow: hidden;
     isolation: isolate;
+    /* Backdrop root: card glass samples only what is inside the panel, so the page's black
+       doesn't bleed into the blur along the left and right edges. */
+    clip-path: inset(0 round 0.5rem);
     background: linear-gradient(
       180deg,
       rgb(177, 100, 60) 0%,
@@ -191,9 +194,24 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     transform: translateX(var(--x)) perspective(64rem) rotateY(var(--ry)) scale(var(--s));
     transition:
       transform 0.8s var(--ease),
-      opacity 0.6s var(--ease),
-      filter 0.6s var(--ease);
+      opacity 0.6s var(--ease);
     will-change: transform, opacity;
+  }
+
+  /* Defocus layer: a backdrop blur over the card's own content. Unlike filter: blur(), it
+     doesn't fade where the panel clips the card, so no seam at the panel's left/right edges.
+     The card's own glass makes it the backdrop root, so this only blurs the card. */
+  .dialog::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    pointer-events: none;
+    -webkit-backdrop-filter: blur(24px); /* reads like the Figma 10px layer blur */
+    backdrop-filter: blur(24px);
+    opacity: 0;
+    transition: opacity 0.6s var(--ease);
   }
 
   /* Front: sharp glass with the Figma backdrop blur. */
@@ -210,9 +228,13 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
   .dialog[data-pos='1'] {
     z-index: 2;
     --s: 0.86;
-    filter: blur(10px);
     -webkit-backdrop-filter: blur(6.25rem);
     backdrop-filter: blur(6.25rem);
+  }
+
+  .dialog[data-pos='-1']::after,
+  .dialog[data-pos='1']::after {
+    opacity: 1;
   }
 
   .dialog__img,
@@ -235,7 +257,6 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     z-index: 1;
     --s: 0.74;
     opacity: 0;
-    filter: blur(10px);
     pointer-events: none;
   }
   .dialog[data-pos='-2'] { --x: -44rem; --ry: 30deg; }
@@ -318,6 +339,7 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     }
     .dialog.is-active,
     .dialog.is-active[data-pos] { opacity: 1; }
+    .dialog[data-pos]::after { opacity: 0; }
     .dialog__img { height: 44.6rem; }
   }
 
