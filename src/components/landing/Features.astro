@@ -47,6 +47,10 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
           {
             dialogs.map((img, i) => (
               <li class:list={['fx__cell', { 'is-active': i === 0 }]} data-fx-dialog={i} style={`--a: ${i * 90}deg`}>
+                <span class="slab" style="--z: -4px" aria-hidden="true" />
+                <span class="slab" style="--z: -3px" aria-hidden="true" />
+                <span class="slab" style="--z: -2px" aria-hidden="true" />
+                <span class="slab" style="--z: -1px" aria-hidden="true" />
                 <figure class="dialog">
                   <Image
                     src={img}
@@ -70,7 +74,7 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
   .fx {
     --panel-h: 41.75rem; /* 668px */
     --card-w: 23.4266rem; /* 374.83px dialog */
-    --r: 21rem; /* ring radius */
+    --r: 24rem; /* ring radius */
     position: relative;
     /* Pinned travel: the ring turns 275° over ~3 viewports of scroll. */
     height: calc(var(--panel-h) + 3 * 75svh);
@@ -182,23 +186,38 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     will-change: transform;
   }
 
+  /* Each cell sits on the ring, then turns part-way back towards the viewer (--turn, set per
+     frame) so the neighbours show their faces instead of an edge. */
   .fx__cell {
     position: absolute;
     inset: 0;
     transform-style: preserve-3d;
-    transform: rotateY(var(--a)) translateZ(var(--r));
+    transform: rotateY(var(--a)) translateZ(var(--r)) rotateY(var(--turn, 0deg));
+  }
+
+  /* Opaque card (a tinted take on the panel gradient) so cards behind never show through. */
+  .dialog,
+  .slab {
+    position: absolute;
+    inset: 0;
+    border-radius: 1.5rem;
+    filter: blur(var(--blur, 0px)) brightness(var(--dim, 1));
+    opacity: var(--vis, 1);
   }
 
   .dialog {
-    width: 100%;
-    height: 100%;
     border: 1px solid #e88652;
-    border-radius: 1.5rem;
-    background: rgba(24, 12, 6, 0.55);
+    background: linear-gradient(180deg, #6a3a21 0%, #5c3019 28%, #3a1d0f 56%, #120a06 88%, #0f0e0d 100%);
     box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.25);
     overflow: hidden;
     backface-visibility: hidden;
-    filter: blur(var(--blur, 0px)) brightness(var(--dim, 1));
+  }
+
+  /* 4px extrusion: stacked 1px layers behind the face read as a solid edge when the card turns. */
+  .slab {
+    transform: translateZ(var(--z));
+    background: #7a3f20;
+    border: 1px solid #b8653a;
   }
 
   .dialog__img {
@@ -255,7 +274,8 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
       transition: opacity 0.4s var(--ease);
     }
     .fx__cell.is-active { opacity: 1; }
-    .dialog { height: 44.6rem; filter: none; }
+    .slab { display: none; }
+    .dialog { position: relative; height: 44.6rem; filter: none; opacity: 1; }
   }
 
   @media (max-width: 767px) {
@@ -270,6 +290,7 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
   const TURN = 275; // degrees over the whole pinned travel
   const STEP = 90; // degrees between dialogs
   const SHARP = 8; // within this many degrees of the front a panel is fully in focus
+  const FACE = 0.62; // share of its ring angle a card turns back towards the viewer
 
   // Scroll progress → ring angle. Each panel dwells facing the viewer for a stretch of scroll,
   // then the ring eases to the next one; the last 5° of the 275° turn drift in at the very end.
@@ -293,7 +314,7 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     const viewport = root.querySelector<HTMLElement>('[data-fx-viewport]')!;
     const cards = [...root.querySelectorAll<HTMLButtonElement>('[data-fx-card]')];
     const cells = [...root.querySelectorAll<HTMLElement>('[data-fx-dialog]')];
-    const dialogs = cells.map((c) => c.querySelector<HTMLElement>('.dialog')!);
+
     let active = 0;
     let rot = 0; // rendered angle
     let target = 0; // angle the scroll asks for
@@ -322,13 +343,16 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
       ring.style.setProperty('--tilt', `${(2.5 - 5 * p).toFixed(2)}deg`);
       let best = 0;
       let bestDist = Infinity;
-      cells.forEach((_, k) => {
-        let a = (((k * STEP + rot) % 360) + 540) % 360 - 180; // −180…180, 0 = facing the viewer
+      cells.forEach((cell, k) => {
+        const a = (((k * STEP + rot) % 360) + 540) % 360 - 180; // −180…180, 0 = facing the viewer
         const dist = Math.abs(a);
         if (dist < bestDist) { bestDist = dist; best = k; }
-        const f = Math.min(Math.max(dist - SHARP, 0) / (60 - SHARP), 1);
-        dialogs[k]!.style.setProperty('--blur', `${(f * 10).toFixed(2)}px`);
-        dialogs[k]!.style.setProperty('--dim', (1 - 0.35 * f).toFixed(3));
+        const f = Math.min(Math.max(dist - SHARP, 0) / (70 - SHARP), 1);
+        const vis = dist <= 105 ? 1 : Math.max(0, 1 - (dist - 105) / 30); // far side fades out
+        cell.style.setProperty('--turn', `${(-FACE * a).toFixed(2)}deg`);
+        cell.style.setProperty('--blur', `${(f * 8).toFixed(2)}px`);
+        cell.style.setProperty('--dim', (1 - 0.3 * f).toFixed(3));
+        cell.style.setProperty('--vis', vis.toFixed(3));
       });
       setActive(best);
     }
@@ -394,7 +418,7 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
     desktop.addEventListener('change', () => {
       if (desktop.matches) { rot = target = angleFor(progress()); paint(); }
       else {
-        dialogs.forEach((dl) => { dl.style.removeProperty('--blur'); dl.style.removeProperty('--dim'); });
+        cells.forEach((c) => ['--blur', '--dim', '--vis', '--turn'].forEach((v) => c.style.removeProperty(v)));
         fromSwipe();
       }
     });
