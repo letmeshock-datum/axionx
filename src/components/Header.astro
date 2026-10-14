@@ -58,11 +58,12 @@ const d = t(locale);
     letter-spacing: 0.02em; /* 0.28px */
     text-transform: uppercase;
     text-decoration: none;
-    color: var(--c-text);
-    transition: opacity 0.2s var(--ease);
+    color: var(--c-dim); /* grey at rest */
+    transition: color 0.2s var(--ease);
   }
 
-  .nav__link:hover { opacity: 0.65; }
+  .nav__link:hover,
+  .nav__link:focus-visible { color: var(--c-white); }
 
   :global([dir='rtl']) .nav__link {
     font-family: var(--font-sans);
