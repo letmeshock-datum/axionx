@@ -88,13 +88,15 @@ const introLines = d.spar.intro.split(/(?<=\.)\s+(?=\S)/);
     background: var(--c-surface-subtle);
   }
 
-  /* Illustration: a faint trace until the tile is hovered or focused (or, on touch, centred on screen). */
+  /* Illustration: visible but still and neutral at rest — no motion, no accent (lit parts in grey,
+     travelling lights hidden). It lights up in the accent and animates when the tile is hovered
+     or focused (or, on touch, centred on screen). */
   .step { position: relative; outline-offset: 0.25rem; }
 
   .step__fig {
     margin-bottom: auto;
     padding: 0.5rem 0.5rem 1rem;
-    opacity: 0.08; /* a faint trace at rest; full on hover/focus */
+    opacity: 0.4; /* clearly visible at rest; full on hover/focus */
     transform: translateY(0.5rem) scale(0.97);
     transition:
       opacity 0.45s var(--ease),
@@ -108,12 +110,22 @@ const introLines = d.spar.intro.split(/(?<=\.)\s+(?=\S)/);
     transform: none;
   }
 
+  .step__fig :global(.iso) { --c-accent: rgba(255, 255, 255, 0.45); }
+  .step__fig :global(.pulse),
+  .step__fig :global(.ring) { visibility: hidden; }
+
   .step.is-revealed :global(.iso),
-  .step:focus-visible :global(.iso) { --iso-run: running; }
+  .step:focus-visible :global(.iso) { --iso-run: running; --c-accent: #c6e800; }
+  .step.is-revealed :global(.pulse),
+  .step.is-revealed :global(.ring),
+  .step:focus-visible :global(.pulse),
+  .step:focus-visible :global(.ring) { visibility: visible; }
 
   @media (hover: hover) {
     .step:hover .step__fig { opacity: 1; transform: none; }
-    .step:hover :global(.iso) { --iso-run: running; }
+    .step:hover :global(.iso) { --iso-run: running; --c-accent: #c6e800; }
+    .step:hover :global(.pulse),
+    .step:hover :global(.ring) { visibility: visible; }
   }
 
   .step { transition: background-color 0.35s var(--ease); }
