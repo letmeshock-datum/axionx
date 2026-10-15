@@ -1,4 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-  <style>path{fill:#080808}@media (prefers-color-scheme:dark){path{fill:#fff}}</style>
-  <path transform="translate(0 1)" d="M12.3721 8L16.4093 14.7199H12.8682C9.20943 14.7199 7.84492 16.608 6.7907 18.6559L4 24H9.58139L12.0312 19.5201H19.2931L21.9846 24H28L18.3875 8H12.3721Z"/>
+  <rect width="32" height="32" rx="4" fill="#fff"/>
+  <path transform="translate(0 1)" fill="#000" d="M12.3721 8L16.4093 14.7199H12.8682C9.20943 14.7199 7.84492 16.608 6.7907 18.6559L4 24H9.58139L12.0312 19.5201H19.2931L21.9846 24H28L18.3875 8H12.3721Z"/>
 </svg>
