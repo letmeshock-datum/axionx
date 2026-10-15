@@ -25,8 +25,8 @@ const d = t(Astro.props.locale);
   /* Figma Footer 1338:3124 — pt 240, pb 48. */
   .cta__top {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
+    align-items: center;
+    justify-content: center;
     gap: 2rem;
     padding-block: 15rem 3rem;
   }
@@ -36,11 +36,10 @@ const d = t(Astro.props.locale);
     line-height: 0.9;
     color: var(--c-white);
     white-space: nowrap;
+    text-align: center;
   }
 
   .cta__title > span { display: block; }
-
-
 
   /* Full-bleed: sized to the viewport, not the (scaled) rem column. */
   .cta__mark {
