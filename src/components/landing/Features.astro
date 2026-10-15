@@ -220,12 +220,13 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
   .dialog[data-pos='0'] { z-index: 3; }
 
   /* Neighbours: ~56px clear of the front card, turned slightly inwards, content at 50%,
-     the whole tile out of focus (Figma had 10px; doubled on request). */
+     the whole tile out of focus — 8px keeps the card readable as a card and the panel clean
+     (20px smeared the dark glass into the background). */
   .dialog[data-pos='-1'],
   .dialog[data-pos='1'] {
     z-index: 2;
     --s: 0.86;
-    --blur: 20px;
+    --blur: 8px;
     --fade: 0.5;
   }
   .dialog[data-pos='-1'] { --x: -24.5rem; --ry: 22deg; }
@@ -236,7 +237,7 @@ const dialogs = [dialog01, dialog02, dialog03, dialog04];
   .dialog[data-pos='2'] {
     z-index: 1;
     --s: 0.74;
-    --blur: 20px;
+    --blur: 8px;
     --fade: 0.5;
     opacity: 0;
     pointer-events: none;
