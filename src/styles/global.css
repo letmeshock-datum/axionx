@@ -8,8 +8,8 @@
   --c-muted: rgba(255, 255, 255, 0.65);
   --c-dim: rgba(245, 245, 245, 0.6);
   --c-label: rgba(255, 255, 255, 0.55);
-  --c-accent: #c6e800; /* semantic/brand/fill */
-  --c-accent-border: rgba(99, 116, 0, 0.4); /* semantic/brand/border */
+  --c-accent: #fefe54; /* brand accent */
+  --c-accent-border: rgba(127, 127, 42, 0.4); /* accent at half brightness, 40% */
   --c-gold: #d1b148;
   --c-surface-subtle: rgba(255, 255, 255, 0.05);
   --c-surface-muted: rgba(255, 255, 255, 0.1);
