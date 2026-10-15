@@ -7,8 +7,14 @@ const LATIN =
 const ARABIC =
   'U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC'.split(',');
 
+// Absolute URLs (canonical, og:image) follow the domain production is served on: Vercel's
+// production domain while axionx.sa isn't attached yet, axionx.sa once it is.
+const SITE_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : 'https://axionx.sa';
+
 export default defineConfig({
-  site: 'https://axionx.sa',
+  site: SITE_URL,
   trailingSlash: 'never',
   build: {
     format: 'file',

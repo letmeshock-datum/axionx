@@ -3,8 +3,8 @@
  * placeholder goes live lives here.
  */
 export const SITE = {
-  /** Canonical origin, no trailing slash. Also set in astro.config.mjs → `site`. */
-  url: 'https://axionx.sa',
+  /** Canonical origin, no trailing slash; follows `site` in astro.config.mjs. */
+  url: import.meta.env.SITE.replace(/\/$/, ''),
   name: 'Axion',
   /** Address copied by the "Request a briefing" button (and used as its mailto fallback). */
   email: 'info@axion.com.sa',
