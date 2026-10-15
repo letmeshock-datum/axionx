@@ -7,6 +7,6 @@ export const SITE = {
   url: 'https://axionx.sa',
   name: 'Axion',
   /** Address copied by the "Request a briefing" button (and used as its mailto fallback). */
-  email: 'hello@axionx.sa',
+  email: 'info@axion.com.sa',
   themeColor: '#080808',
 } as const;
