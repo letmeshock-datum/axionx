@@ -1,6 +1,5 @@
 ---
 import logo from '../../assets/landing/logo-footer.svg';
-import { SITE } from '../../site.config';
 import { t, type Locale } from '../../i18n/ui';
 
 interface Props {
@@ -15,7 +14,6 @@ const d = t(Astro.props.locale);
       <span>{d.cta.line1}</span>
       <span>{d.cta.line2}</span>
     </h2>
-    <a class="btn cta__btn" href={`mailto:${SITE.email}`}>{d.cta.button}</a>
   </div>
   <!-- Frame 43 1338:3129: 203px strip, the 230px wordmark is cropped at the bottom. -->
   <div class="cta__mark" aria-hidden="true">
@@ -42,15 +40,7 @@ const d = t(Astro.props.locale);
 
   .cta__title > span { display: block; }
 
-  .cta__btn {
-    flex: none;
-    padding: 1.25rem 2rem; /* 20 / 32 */
-    background: var(--c-accent);
-    color: #000;
-    font-size: 1.25rem;
-  }
 
-  .cta__btn:hover { background: #ffff8a; }
 
   /* Full-bleed: sized to the viewport, not the (scaled) rem column. */
   .cta__mark {
@@ -75,7 +65,6 @@ const d = t(Astro.props.locale);
   @media (max-width: 767px) {
     .cta__top { padding-block: 5rem 2rem; gap: 1.5rem; }
     .cta__title { font-size: 2.5rem; line-height: 0.95; }
-    .cta__btn { padding: 1rem 1.5rem; font-size: 1.0625rem; }
   }
 </style>
 

@@ -1,8 +1,6 @@
 ---
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import logo from '../assets/landing/logo-nav.svg';
-import gen from '../assets/landing/gen.svg';
-import { SITE } from '../site.config';
 import { t, type Locale } from '../i18n/ui';
 
 interface Props {
@@ -15,13 +13,11 @@ const d = t(locale);
 <header class="nav wrap">
   <a class="nav__brand" dir="ltr" href={getRelativeLocaleUrl(locale, '/')} aria-label={d.a11y.home}>
     <img src={logo.src} width={logo.width} height={logo.height} alt="" class="nav__logo" />
-    <img src={gen.src} width={gen.width} height={gen.height} alt="" class="nav__gen" />
   </a>
   <nav class="nav__links" aria-label={d.a11y.primary}>
     <a class="nav__link" href="#product">{d.nav.product}</a>
     <a class="nav__link" href="#spar">{d.nav.spar}</a>
     <a class="nav__link" href="#oversight">{d.nav.oversight}</a>
-    <a class="btn nav__demo" href={`mailto:${SITE.email}`}>{d.nav.demo}</a>
   </nav>
 </header>
 
@@ -43,7 +39,6 @@ const d = t(locale);
   }
 
   .nav__logo { width: 9.27rem; height: auto; } /* 148.3 × 24.06 */
-  .nav__gen { width: 4.719rem; height: auto; } /* 75.5 × 23.87 */
 
   .nav__links {
     display: flex;
@@ -71,14 +66,7 @@ const d = t(locale);
     text-transform: none;
   }
 
-  .nav__demo {
-    padding: 1rem 1.5rem; /* 16 / 24 */
-    background: var(--c-text);
-    color: #000;
-    font-size: 1rem;
-  }
 
-  .nav__demo:hover { background: var(--c-white); }
 
   @media (max-width: 1023px) {
     .nav__link { display: none; }
@@ -88,13 +76,10 @@ const d = t(locale);
   @media (max-width: 767px) {
     .nav { padding-block: 1rem; gap: 1rem; }
     .nav__logo { width: 7.4rem; }
-    .nav__gen { width: 3.77rem; }
     .nav__links { gap: 1rem; }
-    .nav__demo { padding: 0.625rem 0.875rem; font-size: 0.8125rem; }
   }
 
   /* Very narrow phones: logo only; the same CTA closes the page. */
   @media (max-width: 359px) {
-    .nav__demo { display: none; }
   }
 </style>
