@@ -55,7 +55,8 @@ export interface Dictionary {
     subline1: string;
     subline2: string;
   };
-  cta: { line1: string; line2: string; button: string; copied: string };
+  cta: { line1: string; line2: string; button: string };
+  mail: { label: string; app: string; copy: string; copied: string; subject: string };
 }
 
 export const ui: Record<Locale, Dictionary> = {
@@ -156,7 +157,14 @@ export const ui: Record<Locale, Dictionary> = {
       subline1: 'Autonomy where it’s safe.',
       subline2: 'Accountability everywhere else.',
     },
-    cta: { line1: 'Ask Axion Gen', line2: 'your first question.', button: 'Request a demo', copied: 'Email copied' },
+    cta: { line1: 'Ask Axion Gen', line2: 'your first question.', button: 'Request a demo' },
+    mail: {
+      label: 'Write to us',
+      app: 'Mail app',
+      copy: 'Copy address',
+      copied: 'Copied',
+      subject: 'Axion Gen demo request',
+    },
   },
   ar: {
     meta: {
@@ -255,7 +263,14 @@ export const ui: Record<Locale, Dictionary> = {
       subline1: 'استقلالية حيث تكون آمنة.',
       subline2: 'ومساءلة في كل ما عدا ذلك.',
     },
-    cta: { line1: 'اطرح على Axion Gen', line2: 'سؤالك الأول.', button: 'اطلب عرضًا توضيحيًا', copied: 'تم نسخ البريد الإلكتروني' },
+    cta: { line1: 'اطرح على Axion Gen', line2: 'سؤالك الأول.', button: 'اطلب عرضًا توضيحيًا' },
+    mail: {
+      label: 'راسلنا',
+      app: 'تطبيق البريد',
+      copy: 'نسخ العنوان',
+      copied: 'تم النسخ',
+      subject: 'طلب عرض توضيحي لـ Axion Gen',
+    },
   },
 };
 

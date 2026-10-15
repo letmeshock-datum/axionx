@@ -15,7 +15,7 @@ const d = t(Astro.props.locale);
       <span>{d.cta.line1}</span>
       <span>{d.cta.line2}</span>
     </h2>
-    <a class="btn cta__btn" href={`mailto:${SITE.email}`}>{d.cta.button}</a>
+    <a class="btn cta__btn" aria-haspopup="dialog" aria-expanded="false" href={`mailto:${SITE.email}`}>{d.cta.button}</a>
   </div>
   <!-- Frame 43 1338:3129: 203px strip, the 230px wordmark is cropped at the bottom. -->
   <div class="cta__mark" aria-hidden="true">
