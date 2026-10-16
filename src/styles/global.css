@@ -63,13 +63,34 @@
   animation-duration: 0.2s;
 }
 
-/* A page arriving through the language wipe starts covered (src/lib/wipe.ts takes over). */
+/* Language wipe panel (src/lib/wipe.ts): accent, with the AXION wordmark across the full width,
+   low on the screen and running a little past the bottom edge (18% of its height). */
+.wipe-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  overflow: hidden;
+  background: var(--c-accent);
+  will-change: transform;
+}
+.wipe-panel__mark {
+  position: absolute;
+  left: 1vw;
+  bottom: calc(98vw * 230 / 1417.84 * -0.18);
+  width: 98vw;
+  max-width: none;
+  height: auto;
+}
+
+/* A page arriving through the wipe starts covered, wordmark in place; the script takes over. */
 html[data-wipe]::after {
   content: '';
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: var(--c-accent);
+  background: var(--c-accent) url('/brand/axion-wordmark-black.svg') no-repeat;
+  background-size: 98vw auto;
+  background-position: 1vw calc(100% + 98vw * 230 / 1417.84 * 0.18);
 }
 html[data-wipe] .page {
   opacity: 0;
