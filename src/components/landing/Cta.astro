@@ -21,7 +21,7 @@ const logo = Astro.props.locale === 'ar' ? logoAr : logoEn;
   </div>
   <!-- Frame 43 1338:3129: 203px strip, the 230px wordmark is cropped at the bottom. -->
   <div class="cta__mark" aria-hidden="true">
-    <img src={logo.src} width={logo.width} height={logo.height} alt="" class="cta__logo" data-cta-logo />
+    <img src={logo.src} width={logo.width} height={logo.height} alt="" class="cta__logo" data-cta-logo data-locale={Astro.props.locale} />
   </div>
 </footer>
 
@@ -62,7 +62,7 @@ const logo = Astro.props.locale === 'ar' ? logoAr : logoEn;
   }
 
   /* Rises out of the bottom edge as the page reaches its end (after thedatum.ai's footer). */
-  /* Both wordmarks share one height (the Latin one at 1417.84 × 230 design px). */
+  /* Latin wordmark: 1417.84 × 230 design px. The Arabic one is 1.5× taller, as in the header. */
   .cta__logo {
     display: block;
     width: auto;
@@ -72,6 +72,8 @@ const logo = Astro.props.locale === 'ar' ? logoAr : logoEn;
     transform: translate3d(0, calc((1 - var(--rise, 1)) * 72%), 0);
     will-change: transform;
   }
+  .cta__logo[data-locale='ar'] { height: calc(100vw * 345 / 1440); }
+  .cta__mark:has([data-locale='ar']) { height: calc(100vw * 300 / 1440); }
 
   @media (max-width: 1023px) {
     .cta__top { flex-direction: column; padding-block: 8rem 2.5rem; }
