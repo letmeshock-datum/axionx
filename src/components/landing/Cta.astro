@@ -1,5 +1,6 @@
 ---
-import logo from '../../assets/landing/logo-footer.svg';
+import logoEn from '../../assets/landing/logo-footer.svg';
+import logoAr from '../../assets/landing/logo-footer-ar.svg';
 import { SITE } from '../../site.config';
 import { t, type Locale } from '../../i18n/ui';
 
@@ -7,6 +8,7 @@ interface Props {
   locale: Locale;
 }
 const d = t(Astro.props.locale);
+const logo = Astro.props.locale === 'ar' ? logoAr : logoEn;
 ---
 
 <footer class="cta" data-cta>
@@ -60,10 +62,13 @@ const d = t(Astro.props.locale);
   }
 
   /* Rises out of the bottom edge as the page reaches its end (after thedatum.ai's footer). */
+  /* Both wordmarks share one height (the Latin one at 1417.84 × 230 design px). */
   .cta__logo {
-    width: calc(100vw * 1417.84 / 1440);
+    display: block;
+    width: auto;
     max-width: none;
-    height: auto;
+    height: calc(100vw * 230 / 1440);
+    margin-inline: auto;
     transform: translate3d(0, calc((1 - var(--rise, 1)) * 72%), 0);
     will-change: transform;
   }

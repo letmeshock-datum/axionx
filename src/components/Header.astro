@@ -1,6 +1,8 @@
 ---
 import { getRelativeLocaleUrl } from 'astro:i18n';
-import logo from '../assets/landing/logo-nav.svg';
+import logoEn from '../assets/landing/logo-nav.svg';
+import logoAr from '../assets/landing/logo-nav-ar.svg';
+import LanguageSwitch from './LanguageSwitch.astro';
 import { SITE } from '../site.config';
 import { t, type Locale } from '../i18n/ui';
 
@@ -9,16 +11,18 @@ interface Props {
 }
 const { locale } = Astro.props;
 const d = t(locale);
+const logo = locale === 'ar' ? logoAr : logoEn;
 ---
 
 <header class="nav wrap">
-  <a class="nav__brand" dir="ltr" href={getRelativeLocaleUrl(locale, '/')} aria-label={d.a11y.home}>
+  <a class="nav__brand" href={getRelativeLocaleUrl(locale, '/')} aria-label={d.a11y.home}>
     <img src={logo.src} width={logo.width} height={logo.height} alt="" class="nav__logo" />
   </a>
   <nav class="nav__links" aria-label={d.a11y.primary}>
     <a class="nav__link" href="#product">{d.nav.product}</a>
     <a class="nav__link" href="#spar">{d.nav.spar}</a>
     <a class="nav__link" href="#oversight">{d.nav.oversight}</a>
+    <LanguageSwitch locale={locale} />
     <a class="btn nav__demo" aria-haspopup="dialog" aria-expanded="false" href={`mailto:${SITE.email}`}>{d.nav.demo}</a>
   </nav>
 </header>
@@ -40,7 +44,8 @@ const d = t(locale);
     text-decoration: none;
   }
 
-  .nav__logo { width: 9.27rem; height: auto; } /* 148.3 × 24.06 */
+  /* Both wordmarks share the Latin one's height: 24.06 design px. */
+  .nav__logo { width: auto; height: 1.504rem; }
 
   .nav__links {
     display: flex;
@@ -83,14 +88,14 @@ const d = t(locale);
   }
 
   @media (max-width: 767px) {
-    .nav { padding-block: 1rem; gap: 1rem; }
-    .nav__logo { width: 7.4rem; }
-    .nav__links { gap: 1rem; }
+    .nav { padding-block: 1rem; gap: 0.75rem; }
+    .nav__logo { height: 1.2rem; }
+    .nav__links { gap: 0.5rem; }
     .nav__demo { padding: 0.625rem 0.875rem; font-size: 0.8125rem; }
   }
 
-  /* Very narrow phones: logo only; the same CTA closes the page. */
-  @media (max-width: 359px) {
+  /* Narrow phones: logo + language; the same CTA closes the page. */
+  @media (max-width: 369px) {
     .nav__demo { display: none; }
   }
 </style>

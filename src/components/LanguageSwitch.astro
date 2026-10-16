@@ -1,0 +1,121 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { locales, t, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const d = t(locale);
+const names: Record<Locale, string> = { en: 'EN', ar: 'عربي' };
+---
+
+<!-- Segmented control: a thumb slides to the chosen language, then the page switches. -->
+<div class="lang" role="group" aria-label={d.a11y.language} data-lang>
+  <span class="lang__thumb" aria-hidden="true" data-lang-thumb></span>
+  {
+    locales.map((l) => (
+      <a
+        class="lang__item"
+        href={getRelativeLocaleUrl(l, '/')}
+        hreflang={l}
+        lang={l}
+        aria-current={l === locale ? 'true' : undefined}
+        data-lang-item
+      >
+        {names[l]}
+      </a>
+    ))
+  }
+</div>
+
+<style>
+  .lang {
+    position: relative;
+    display: flex;
+    padding: 0.25rem;
+    border: 1px solid var(--c-border-subtle);
+    border-radius: 999px;
+    background: var(--c-surface-subtle);
+  }
+
+  .lang__thumb {
+    position: absolute;
+    top: 0.25rem;
+    bottom: 0.25rem;
+    left: 0;
+    width: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    opacity: 0;
+    transition:
+      translate 0.35s var(--ease),
+      width 0.35s var(--ease);
+  }
+  .lang.is-ready .lang__thumb { opacity: 1; }
+
+  .lang__item {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.875rem;
+    border-radius: 999px;
+    color: var(--c-dim);
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.8125rem;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    text-decoration: none;
+    transition: color 0.2s var(--ease);
+  }
+  .lang__item:lang(ar) {
+    font-family: var(--font-arabic), var(--font-geist);
+    font-size: 0.9375rem;
+    letter-spacing: 0;
+  }
+  .lang__item:hover,
+  .lang__item:focus-visible,
+  .lang__item[aria-current='true'] { color: var(--c-white); }
+
+  @media (max-width: 767px) {
+    .lang__item { padding: 0.4375rem 0.625rem; font-size: 0.75rem; }
+    .lang__item:lang(ar) { font-size: 0.875rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lang__thumb { transition: none; }
+  }
+</style>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-lang]')) {
+    const thumb = root.querySelector<HTMLElement>('[data-lang-thumb]')!;
+    const items = [...root.querySelectorAll<HTMLAnchorElement>('[data-lang-item]')];
+    const current = items.find((a) => a.getAttribute('aria-current') === 'true') ?? items[0]!;
+
+    const moveTo = (el: HTMLElement) => {
+      thumb.style.width = `${el.offsetWidth}px`;
+      thumb.style.translate = `${el.offsetLeft}px 0`;
+    };
+
+    moveTo(current);
+    requestAnimationFrame(() => root.classList.add('is-ready'));
+    document.fonts?.ready.then(() => moveTo(current));
+    addEventListener('resize', () => moveTo(current));
+
+    for (const item of items) {
+      item.addEventListener('click', (e) => {
+        if (item === current || e.metaKey || e.ctrlKey || e.shiftKey) return;
+        e.preventDefault();
+        moveTo(item);
+        item.style.color = 'var(--c-white)';
+        current.style.color = 'var(--c-dim)';
+        const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        setTimeout(() => location.assign(item.href + location.hash), reduce ? 0 : 260);
+      });
+    }
+  }
+</script>

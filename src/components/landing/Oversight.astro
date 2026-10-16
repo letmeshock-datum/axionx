@@ -29,9 +29,9 @@ const arrows = [
     <p class="ov__intro">{d.oversight.intro}</p>
   </div>
 
-  <!-- Diagram plaque 1338:3066. Geometry is fixed left-to-right in every locale. -->
+  <!-- Diagram plaque 1338:3066. Placed with inline-start offsets, so Arabic mirrors it: the flow runs right to left. -->
   <figure class="plaque" aria-label={g.label} data-flow>
-    <div class="diagram" dir="ltr">
+    <div class="diagram">
       <!-- Signal layer: pulses run along the arrows (Figma coordinates, 1230 × 392). -->
       <svg class="signal" viewBox="0 0 1230 392" aria-hidden="true" focusable="false">
         <defs>
@@ -165,17 +165,17 @@ const arrows = [
     background: var(--c-surface-muted);
   }
 
-  .node--agent { left: 0; top: 8.75rem; width: 13.75rem; }
-  .node--policy { left: 19.375rem; top: 8.75rem; width: 13.75rem; }
-  .node--autonomous { left: 38.75rem; top: 0; width: 17.5rem; }
+  .node--agent { inset-inline-start: 0; top: 8.75rem; width: 13.75rem; }
+  .node--policy { inset-inline-start: 19.375rem; top: 8.75rem; width: 13.75rem; }
+  .node--autonomous { inset-inline-start: 38.75rem; top: 0; width: 17.5rem; }
   .node--person {
-    left: 38.75rem;
+    inset-inline-start: 38.75rem;
     top: 14.5rem; /* 112 + gap 120 */
     width: 17.5rem;
     height: 10rem;
     border: 2px solid var(--c-accent-border);
   }
-  .node--record { left: 61.875rem; top: 8.75rem; width: 15rem; }
+  .node--record { inset-inline-start: 61.875rem; top: 8.75rem; width: 15rem; }
 
   .node__label,
   .edge,
@@ -234,15 +234,18 @@ const arrows = [
 
   /* Arrow SVGs keep their own width/height; the box is positioned by its Figma frame. */
   .arrow { position: absolute; max-width: none; }
-  .arrow--policy { left: 13.75rem; top: 11.79rem; width: 5.6875rem; height: auto; }
-  .arrow--autonomous { left: 26.2188rem; top: 3.0398rem; width: 12.625rem; height: auto; }
-  .arrow--person { left: 26.2813rem; top: 15.75rem; width: 12.5625rem; height: auto; }
-  .arrow--record-auto { left: 56.25rem; top: 3.4375rem; width: 13.5853rem; height: auto; }
-  .arrow--record-person { left: 56.25rem; top: 15.6875rem; width: 13.5853rem; height: auto; }
+  /* Arrows and the signal are drawn left to right; Arabic flips them with the layout. */
+  :global([dir='rtl']) .arrow,
+  :global([dir='rtl']) .signal { scale: -1 1; }
+  .arrow--policy { inset-inline-start: 13.75rem; top: 11.79rem; width: 5.6875rem; height: auto; }
+  .arrow--autonomous { inset-inline-start: 26.2188rem; top: 3.0398rem; width: 12.625rem; height: auto; }
+  .arrow--person { inset-inline-start: 26.2813rem; top: 15.75rem; width: 12.5625rem; height: auto; }
+  .arrow--record-auto { inset-inline-start: 56.25rem; top: 3.4375rem; width: 13.5853rem; height: auto; }
+  .arrow--record-person { inset-inline-start: 56.25rem; top: 15.6875rem; width: 13.5853rem; height: auto; }
 
   .edge {
     position: absolute;
-    left: 26.25rem;
+    inset-inline-start: 26.25rem;
     color: var(--c-muted);
   }
 
@@ -251,7 +254,7 @@ const arrows = [
 
   .caption {
     position: absolute;
-    left: 0;
+    inset-inline-start: 0;
     bottom: 0;
     width: 21.1875rem; /* 339px */
     font-size: 1.25rem;
@@ -264,7 +267,7 @@ const arrows = [
      → record together. Runs only while the plaque is on screen (.is-live). */
   .signal {
     position: absolute;
-    left: 0;
+    inset-inline-start: 0;
     top: 0;
     width: 76.875rem; /* 1230 */
     height: 24.5rem; /* 392 */
