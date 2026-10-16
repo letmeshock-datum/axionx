@@ -90,20 +90,20 @@ export default defineConfig({
     },
     {
       provider: fontProviders.local(),
-      name: 'IBM Plex Sans Arabic',
+      name: 'Noto Kufi Arabic',
       cssVariable: '--font-arabic',
       // No fallbacks on purpose: the family must stay unicode-range-limited to Arabic so Latin
       // glyphs fall through to Geist (see --font-sans for [dir=rtl] in global.css).
       fallbacks: [],
       options: {
         variants: [
-          ...[400, 500, 700].map((weight) => ({
-            src: [`@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-${weight}-normal.woff2`],
-            weight,
+          {
+            src: ['@fontsource-variable/noto-kufi-arabic/files/noto-kufi-arabic-arabic-wght-normal.woff2'],
+            weight: '100 900',
             style: 'normal',
             display: 'swap',
             unicodeRange: /** @type {[string, ...string[]]} */ (ARABIC),
-          })),
+          },
         ],
       },
     },
