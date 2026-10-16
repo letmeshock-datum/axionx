@@ -2,7 +2,7 @@
  * Wipe page transition, after the "wipe" transition in Codrops' Interlude
  * (github.com/codrops/interlude, MIT).
  *
- * Leave (this page): an accent panel slides in from one side, pushing the page
+ * Leave (this page): a warm near-black panel slides in from one side, pushing the page
  * along as it fades. Then the browser navigates. Enter (next page): an inline
  * script in <head> (Base.astro) sees the hand-off note and paints the panel
  * before the first frame, so the screen stays covered; once fonts and the first
@@ -19,21 +19,26 @@ const PUSH = 80; // px the page is pushed along
 const MEDIA_TIMEOUT = 1500; // ms the reveal waits for fonts and images, at most
 const MARK_IN = { duration: 650, delay: 250, easing: 'cubic-bezier(0.22, 0.61, 0.36, 1)' }; // the wordmark coming up
 export const WIPE_KEY = 'axion:wipe';
-// Full-width AXION wordmark on the panel, sitting low and running a little past the bottom edge.
-// The same geometry is in global.css (html[data-wipe]::after), so the hand-off between pages lines up.
-const MARK_SRC = '/brand/axion-wordmark-black.svg';
+// Full-width wordmark of the next page's language on the panel, sitting low and running a little
+// past the bottom edge. The same geometry is in global.css (html[data-wipe]::after), so the
+// hand-off between pages lines up.
+const MARKS = {
+  ltr: '/brand/axion-wordmark-gold.svg',
+  rtl: '/brand/axion-wordmark-ar-gold.svg',
+} as const;
+type Dir = keyof typeof MARKS;
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function makePanel(x: string) {
+function makePanel(x: string, dir: Dir) {
   const panel = document.createElement('div');
   panel.setAttribute('aria-hidden', 'true');
   panel.className = 'wipe-panel';
   panel.style.transform = `translateX(${x})`;
   const mark = document.createElement('img');
-  mark.src = MARK_SRC;
+  mark.src = MARKS[dir];
   mark.alt = '';
-  mark.className = 'wipe-panel__mark';
+  mark.className = `wipe-panel__mark wipe-panel__mark--${dir}`;
   panel.append(mark);
   document.body.append(panel);
   return { panel, mark };
@@ -50,14 +55,14 @@ addEventListener('pageshow', (e) => {
 });
 
 /** Covers this page with the panel, then navigates to `href`. */
-export async function wipeTo(href: string, nextDir: 'ltr' | 'rtl') {
+export async function wipeTo(href: string, nextDir: Dir) {
   if (leaving || reduced()) {
     location.assign(href);
     return;
   }
   const s = nextDir === 'rtl' ? -1 : 1; // 1: the panel comes in from the right
   const page = document.querySelector<HTMLElement>('.page')!;
-  const { panel, mark } = makePanel(`${100 * s}%`);
+  const { panel, mark } = makePanel(`${100 * s}%`, nextDir);
   const anims = [
     panel.animate([{ transform: `translateX(${100 * s}%)` }, { transform: 'translateX(0)' }], { ...LEAVE, fill: 'forwards' }),
     mark.animate([{ opacity: 0, translate: '0 12%' }, { opacity: 1, translate: '0 0' }], { ...MARK_IN, fill: 'both' }),
@@ -89,12 +94,13 @@ export async function wipeIn() {
   const s = Number(root.dataset.wipe);
   if (!s) return;
   // The panel's wordmark must be decoded before it replaces the CSS one, or a frame shows without it.
+  const dir: Dir = root.dir === 'rtl' ? 'rtl' : 'ltr';
   const mark = new Image();
-  mark.src = MARK_SRC;
+  mark.src = MARKS[dir];
   await Promise.all([ready(), mark.decode().catch(() => {})]);
 
   const page = document.querySelector<HTMLElement>('.page')!;
-  const { panel } = makePanel('0');
+  const { panel } = makePanel('0', dir);
   delete root.dataset.wipe; // the real panel has taken over from the CSS one
 
   const anims = [

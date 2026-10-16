@@ -11,6 +11,7 @@
   --c-accent: #fefe54; /* brand accent */
   --c-accent-border: rgba(127, 127, 42, 0.4); /* accent at half brightness, 40% */
   --c-gold: #d1b148;
+  --c-wipe: #1a1711; /* language-switch panel: black warmed towards gold */
   --c-surface-subtle: rgba(255, 255, 255, 0.05);
   --c-surface-muted: rgba(255, 255, 255, 0.1);
   --c-border-subtle: rgba(255, 255, 255, 0.1);
@@ -63,14 +64,14 @@
   animation-duration: 0.2s;
 }
 
-/* Language wipe panel (src/lib/wipe.ts): accent, with the AXION wordmark across the full width,
-   low on the screen and running a little past the bottom edge (18% of its height). */
+/* Language wipe panel (src/lib/wipe.ts): warm near-black, with the next page's wordmark (AXION, or the
+   Arabic one into /ar) across the full width, low and running 18% of its height past the bottom. */
 .wipe-panel {
   position: fixed;
   inset: 0;
   z-index: 200;
   overflow: hidden;
-  background: var(--c-accent);
+  background: var(--c-wipe);
   will-change: transform;
 }
 .wipe-panel__mark {
@@ -81,6 +82,9 @@
   max-width: none;
   height: auto;
 }
+.wipe-panel__mark--rtl {
+  bottom: calc(98vw * 173 / 648 * -0.18);
+}
 
 /* A page arriving through the wipe starts covered, wordmark in place; the script takes over. */
 html[data-wipe]::after {
@@ -88,9 +92,13 @@ html[data-wipe]::after {
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: var(--c-accent) url('/brand/axion-wordmark-black.svg') no-repeat;
+  background: var(--c-wipe) url('/brand/axion-wordmark-gold.svg') no-repeat;
   background-size: 98vw auto;
   background-position: 1vw calc(100% + 98vw * 230 / 1417.84 * 0.18);
+}
+html[data-wipe][dir='rtl']::after {
+  background-image: url('/brand/axion-wordmark-ar-gold.svg');
+  background-position: 1vw calc(100% + 98vw * 173 / 648 * 0.18);
 }
 html[data-wipe] .page {
   opacity: 0;
