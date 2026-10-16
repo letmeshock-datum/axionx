@@ -29,6 +29,16 @@
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
+/* Tokens follow the nearest dir attribute, not just <html>, so a page copy in the other
+   direction (the language-switch slices) styles itself correctly. */
+[dir='ltr'] {
+  --tr-display: -0.02em;
+  --tr: -0.01em;
+  --font-display: var(--font-archivo);
+  --display-stretch: 125%;
+  --font-sans: var(--font-geist);
+}
+
 [dir='rtl'] {
   --tr-display: 0;
   --tr: 0;
@@ -43,6 +53,16 @@
 /*  becomes 1120px with 160px sides. Everything in rem scales with it.  */
 /*  Smaller breakpoints switch to their own base.                       */
 /* ------------------------------------------------------------------ */
+/* Same-origin navigations (the language switch) hand over through a view transition: the
+   slices' last frame stays up until the next page paints, then a short cross-fade. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.2s;
+}
+
 html {
   font-size: clamp(10px, 100vw / 102.857, 18px);
   -webkit-text-size-adjust: 100%;
@@ -139,7 +159,7 @@ button {
   text-wrap: balance;
 }
 
-[dir='rtl'] .display {
+.display:dir(rtl) {
   line-height: 1.25 !important;
 }
 

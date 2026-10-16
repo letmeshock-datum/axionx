@@ -10,7 +10,7 @@ const d = t(locale);
 const names: Record<Locale, string> = { en: 'EN', ar: 'عربي' };
 ---
 
-<!-- Segmented control: a thumb slides to the chosen language, then the page switches. -->
+<!-- Segmented control: the thumb slides to the chosen language and the page changes in slices (src/lib/slices.ts). -->
 <div class="lang" role="group" aria-label={d.a11y.language} data-lang>
   <span class="lang__thumb" aria-hidden="true" data-lang-thumb></span>
   {
@@ -93,6 +93,8 @@ const names: Record<Locale, string> = { en: 'EN', ar: 'عربي' };
 </style>
 
 <script>
+  import { slicesTo } from '../lib/slices';
+
   for (const root of document.querySelectorAll<HTMLElement>('[data-lang]')) {
     const thumb = root.querySelector<HTMLElement>('[data-lang-thumb]')!;
     const items = [...root.querySelectorAll<HTMLAnchorElement>('[data-lang-item]')];
@@ -102,11 +104,18 @@ const names: Record<Locale, string> = { en: 'EN', ar: 'عربي' };
       thumb.style.width = `${el.offsetWidth}px`;
       thumb.style.translate = `${el.offsetLeft}px 0`;
     };
+    // Placement without the slide (load, font swap, resize): the thumb is just there.
+    const placeAt = (el: HTMLElement) => {
+      thumb.style.transition = 'none';
+      moveTo(el);
+      void thumb.offsetWidth;
+      thumb.style.removeProperty('transition');
+    };
 
-    moveTo(current);
-    requestAnimationFrame(() => root.classList.add('is-ready'));
-    document.fonts?.ready.then(() => moveTo(current));
-    addEventListener('resize', () => moveTo(current));
+    placeAt(current);
+    root.classList.add('is-ready');
+    document.fonts?.ready.then(() => placeAt(current));
+    addEventListener('resize', () => placeAt(current));
 
     for (const item of items) {
       item.addEventListener('click', (e) => {
@@ -115,9 +124,15 @@ const names: Record<Locale, string> = { en: 'EN', ar: 'عربي' };
         moveTo(item);
         item.style.color = 'var(--c-white)';
         current.style.color = 'var(--c-dim)';
-        const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-        setTimeout(() => location.assign(item.href + location.hash), reduce ? 0 : 260);
+        slicesTo(item.href);
       });
     }
+
+    // Back from the other language via the back/forward cache: undo the half-made switch.
+    addEventListener('pageshow', (e) => {
+      if (!e.persisted) return;
+      items.forEach((a) => a.style.removeProperty('color'));
+      placeAt(current);
+    });
   }
 </script>

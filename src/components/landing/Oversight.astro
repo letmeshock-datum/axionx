@@ -192,9 +192,9 @@ const arrows = [
   .node__label { color: var(--c-label); }
 
   /* Arabic has no mono cut: labels switch to the text face. */
-  :global([dir='rtl']) .node__label,
-  :global([dir='rtl']) .edge,
-  :global([dir='rtl']) .decision {
+  .node__label:dir(rtl),
+  .edge:dir(rtl),
+  .decision:dir(rtl) {
     font-family: var(--font-sans);
     font-size: 0.875rem;
     letter-spacing: 0;
@@ -235,8 +235,8 @@ const arrows = [
   /* Arrow SVGs keep their own width/height; the box is positioned by its Figma frame. */
   .arrow { position: absolute; max-width: none; }
   /* Arrows and the signal are drawn left to right; Arabic flips them with the layout. */
-  :global([dir='rtl']) .arrow,
-  :global([dir='rtl']) .signal { scale: -1 1; }
+  .arrow:dir(rtl),
+  .signal:dir(rtl) { scale: -1 1; }
   .arrow--policy { inset-inline-start: 13.75rem; top: 11.79rem; width: 5.6875rem; height: auto; }
   .arrow--autonomous { inset-inline-start: 26.2188rem; top: 3.0398rem; width: 12.625rem; height: auto; }
   .arrow--person { inset-inline-start: 26.2813rem; top: 15.75rem; width: 12.5625rem; height: auto; }

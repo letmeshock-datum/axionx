@@ -70,7 +70,7 @@ const logo = locale === 'ar' ? logoAr : logoEn;
   .nav__link:hover,
   .nav__link:focus-visible { color: var(--c-white); }
 
-  :global([dir='rtl']) .nav__link {
+  .nav__link:dir(rtl) {
     font-family: var(--font-sans);
     font-size: 1rem;
     text-transform: none;
