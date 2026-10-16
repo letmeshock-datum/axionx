@@ -33,6 +33,8 @@ const names: Record<Locale, string> = { en: 'EN', ar: 'عربي' };
   .lang {
     position: relative;
     display: flex;
+    box-sizing: border-box;
+    height: var(--ctl-h, 3rem); /* matches the demo button next to it */
     padding: 0.25rem;
     border: 1px solid var(--c-border-subtle);
     border-radius: 999px;
@@ -60,7 +62,7 @@ const names: Record<Locale, string> = { en: 'EN', ar: 'عربي' };
     z-index: 1;
     display: flex;
     align-items: center;
-    padding: 0.5rem 0.875rem;
+    padding: 0 1rem;
     border-radius: 999px;
     color: var(--c-dim);
     font-family: var(--font-mono);
@@ -81,7 +83,7 @@ const names: Record<Locale, string> = { en: 'EN', ar: 'عربي' };
   .lang__item[aria-current='true'] { color: var(--c-white); }
 
   @media (max-width: 767px) {
-    .lang__item { padding: 0.4375rem 0.625rem; font-size: 0.75rem; }
+    .lang__item { padding: 0 0.625rem; font-size: 0.75rem; }
     .lang__item:lang(ar) { font-size: 0.875rem; }
   }
 
