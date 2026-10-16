@@ -101,7 +101,9 @@ export default defineConfig({
             src: ['@fontsource-variable/noto-kufi-arabic/files/noto-kufi-arabic-arabic-wght-normal.woff2'],
             weight: '100 900',
             style: 'normal',
-            display: 'swap',
+            // Never flash Arabic in a system face: wait for Noto (it is preloaded on /ar and
+            // prefetched from the other pages, so the wait is a cache hit after a language switch).
+            display: 'block',
             unicodeRange: /** @type {[string, ...string[]]} */ (ARABIC),
           },
         ],

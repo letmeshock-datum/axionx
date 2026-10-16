@@ -1,6 +1,6 @@
 ---
 import { Font } from 'astro:assets';
-import { getAbsoluteLocaleUrl } from 'astro:i18n';
+import { getAbsoluteLocaleUrl, getRelativeLocaleUrl } from 'astro:i18n';
 import '../styles/global.css';
 import { SITE } from '../site.config';
 import { locales, localeMeta, t, type Locale } from '../i18n/ui';
@@ -26,6 +26,9 @@ const alternates = locales.map((l) => ({
   href: getAbsoluteLocaleUrl(l, '/'),
 }));
 const xDefault = getAbsoluteLocaleUrl('en', '/');
+
+// The other language's page is prefetched so the switch lands on a warm cache.
+const otherLocales = locales.filter((l) => l !== locale);
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -107,7 +110,9 @@ const jsonLd = {
     <Font cssVariable="--font-geist" preload />
     <Font cssVariable="--font-archivo" preload />
     <Font cssVariable="--font-geist-mono" preload />
-    {locale === 'ar' && <Font cssVariable="--font-arabic" preload />}
+    <!-- Noto Kufi Arabic loads on every page (the switch's «عربي» label uses it), so /ar opens with it cached. -->
+    <Font cssVariable="--font-arabic" preload={locale === 'ar'} />
+    {otherLocales.map((l) => <link rel="prefetch" href={getRelativeLocaleUrl(l, '/')} />)}
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
