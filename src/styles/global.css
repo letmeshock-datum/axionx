@@ -54,13 +54,25 @@
 /*  Smaller breakpoints switch to their own base.                       */
 /* ------------------------------------------------------------------ */
 /* Same-origin navigations (the language switch) hand over through a view transition: the
-   slices' last frame stays up until the next page paints, then a short cross-fade. */
+   wipe's covered frame stays up until the next page paints, then a short cross-fade. */
 @view-transition {
   navigation: auto;
 }
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation-duration: 0.2s;
+}
+
+/* A page arriving through the language wipe starts covered (src/lib/wipe.ts takes over). */
+html[data-wipe]::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--c-accent);
+}
+html[data-wipe] .page {
+  opacity: 0;
 }
 
 html {

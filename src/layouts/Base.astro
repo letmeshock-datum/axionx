@@ -115,6 +115,16 @@ const jsonLd = {
     {otherLocales.map((l) => <link rel="prefetch" href={getRelativeLocaleUrl(l, '/')} />)}
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <!-- Arriving through the language wipe: stay covered from the first frame (src/lib/wipe.ts). -->
+    <script is:inline>
+      try {
+        const note = JSON.parse(sessionStorage.getItem('axion:wipe') || 'null');
+        sessionStorage.removeItem('axion:wipe');
+        if (note && Date.now() - note.t < 5000 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          document.documentElement.dataset.wipe = String(note.s);
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#main">{d.a11y.skip}</a>
@@ -130,6 +140,11 @@ const jsonLd = {
     </div>
   </body>
 </html>
+
+<script>
+  import { wipeIn } from '../lib/wipe';
+  wipeIn();
+</script>
 
 <script>
   // A bare mailto: link depends on the visitor's OS/browser handler and often

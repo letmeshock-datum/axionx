@@ -10,7 +10,7 @@ const d = t(locale);
 const names: Record<Locale, string> = { en: 'EN', ar: 'عربي' };
 ---
 
-<!-- Segmented control: the thumb slides to the chosen language and the page changes in slices (src/lib/slices.ts). -->
+<!-- Segmented control: the thumb slides to the chosen language and the page changes behind a wipe (src/lib/wipe.ts). -->
 <div class="lang" role="group" aria-label={d.a11y.language} data-lang>
   <span class="lang__thumb" aria-hidden="true" data-lang-thumb></span>
   {
@@ -93,7 +93,7 @@ const names: Record<Locale, string> = { en: 'EN', ar: 'عربي' };
 </style>
 
 <script>
-  import { slicesTo } from '../lib/slices';
+  import { wipeTo } from '../lib/wipe';
 
   for (const root of document.querySelectorAll<HTMLElement>('[data-lang]')) {
     const thumb = root.querySelector<HTMLElement>('[data-lang-thumb]')!;
@@ -124,7 +124,7 @@ const names: Record<Locale, string> = { en: 'EN', ar: 'عربي' };
         moveTo(item);
         item.style.color = 'var(--c-white)';
         current.style.color = 'var(--c-dim)';
-        slicesTo(item.href);
+        wipeTo(item.href, item.lang === 'ar' ? 'rtl' : 'ltr');
       });
     }
 
